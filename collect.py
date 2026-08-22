@@ -16,29 +16,34 @@ TIME_ETFS = {  # idx: (ETF코드, 이름)  — timeetf.co.kr/m11_list.php?cate=0
     17: ("385710", "K이노베이션"),      1:  ("410870", "K컬처"),
 }
 VIEW = "https://timeetf.co.kr/m11_view.php?idx={idx}&cate=002"
-XLS = "https://timeetf.co.kr/pdf_excel.php?cate=002&idx={idx}&"
 
 
 def etf_holdings(idx: int) -> pd.DataFrame:
-    """종목코드/종목명/비중 — 엑셀 다운로드 우선, 실패 시 HTML 표"""
-    df = None
-    try:
-        r = requests.get(XLS.format(idx=idx), headers=UA, timeout=15)
-        r.raise_for_status()
-        try:
-            df = pd.read_excel(io.BytesIO(r.content))
-        except Exception:
-            df = pd.read_html(io.StringIO(r.text))[0]  # xls 위장 HTML 대응
-    except Exception:
-        pass
-    if df is None or "종목코드" not in "".join(map(str, df.columns)):
-        html = requests.get(VIEW.format(idx=idx), headers=UA, timeout=15).text
-        for t in pd.read_html(io.StringIO(html)):
-            if "종목코드" in "".join(map(str, t.columns)):
-                df = t
+    """종목코드/종목명/비중 — 표가 JS로 채워지므로 headless 크롬으로 렌더링 후 파싱"""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        pg = b.new_page(user_agent=UA["User-Agent"])
+        pg.goto(VIEW.format(idx=idx), wait_until="networkidle", timeout=60000)
+        pg.wait_for_selector("#constituentItems table tbody tr, table:has-text('종목코드') tbody tr", timeout=30000)
+        for _ in range(30):                                   # 더보기 버튼 모두 펼치기
+            btn = pg.query_selector("#constituentItems :text('더보기'), a:has-text('더보기'), button:has-text('더보기')")
+            if not btn or not btn.is_visible():
                 break
+            try:
+                btn.click(); pg.wait_for_timeout(400)
+            except Exception:
+                break
+        html = pg.content()
+        b.close()
+    df = None
+    for t in pd.read_html(io.StringIO(html)):
+        cols = "".join(map(str, t.columns))
+        if "종목코드" in cols and len(t) > 0:
+            df = t
+            break
     if df is None:
-        raise RuntimeError(f"ETF idx={idx} 구성종목 표 없음")
+        raise RuntimeError(f"ETF idx={idx} 구성종목 표 없음/빈 표")
     print(f"  [debug] idx={idx} columns={list(df.columns)} rows={len(df)}")
     df.columns = [re.sub(r"\s+", "", str(c)) for c in df.columns]
     wcol = next(c for c in df.columns if c.startswith("비중"))
@@ -49,8 +54,8 @@ def etf_holdings(idx: int) -> pd.DataFrame:
             s = s[:-2]
         return s.zfill(6) if s.isdigit() else s
     df["종목코드"] = df["종목코드"].map(norm)
-    df = df[df["종목코드"].str.fullmatch(r"[0-9A-Z]{6}") & df["종목코드"].str[0].str.isdigit()]  # 현금·기타 제외
-    df = df[~df["종목명"].str.contains("ETF|KODEX|TIGER|채권|선물", na=False)]
+    df = df[df["종목코드"].str.fullmatch(r"[0-9A-Z]{6}") & df["종목코드"].str[0].str.isdigit()]
+    df = df[~df["종목명"].astype(str).str.contains("ETF|KODEX|TIGER|채권|선물|현금", na=False)]
     df["비중"] = pd.to_numeric(df["비중"], errors="coerce")
     return df
 
