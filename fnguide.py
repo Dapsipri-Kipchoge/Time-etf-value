@@ -24,7 +24,13 @@ def to_num(x):
 def fetch(code):
     r = requests.get(URL.format(code=code), headers=HEADERS, timeout=15)
     r.raise_for_status()
-    r.encoding = "euc-kr"
+    for enc in ("utf-8", "euc-kr", "cp949"):
+        try:
+            txt = r.content.decode(enc)
+        except UnicodeDecodeError:
+            continue
+        if "매출액" in txt:
+            return txt
     return r.text
 
 
