@@ -138,29 +138,47 @@ def compute_stock(code: str) -> dict:
     if base_effect:
         pegs["PEG(영익)1y"] = None
 
-    d = {**base, "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site,
+    d = {**base, "순이익(E)": ni0, "영업이익(E)": op0, "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site,
          **pegs, "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
          "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
          "배당수익률": g("시가배당률", act[-1]), "추정연도": y0,
          "비고": mcap_note + ("기저효과→PEG(영익)1y 산출불가" if base_effect else "")}
-    d.update(first_filter(d))
     return d
 
 
-def first_filter(d: dict) -> dict:
-    """국내 1차 정량필터 4조건 (ROIC/WACC 제외). 2개 이상 → 탈락"""
-    p1, p2, p3 = d.get("PEG(영익)1y"), d.get("PEG(영익)2y"), d.get("PEG(영익)3y")
-    roe = d.get("ROE(E)")
-    if d.get("fPER") is None or all(p is None for p in (p1, p2, p3)):
-        return {"탈락조건": "핵심지표 산출불가", "1차결과": "판정보류"}
-    hits = []
-    if p1 is not None and p2 is not None and p3 is not None and p1 > p2 > p3:
-        hits.append("PEG악화추세")
-    if p1 is not None and p1 >= 1.0:
-        hits.append("PEG1y≥1.0")
-    if roe is not None and roe < 15:
-        hits.append("ROE<15%")
-    long_peg = p3 if p3 is not None else p2
-    if "기저효과" in d.get("비고", "") and (long_peg is None or long_peg >= 1.0):
-        hits.append("기저효과미보완")
-    return {"탈락조건": ",".join(hits), "1차결과": "탈락" if len(hits) >= 2 else "통과"}
+# ───────────────────────── 스크리닝 (단일 기준, 전부 충족 = 통과)
+CRITERIA = {"PEG(매출)1y": 1.0, "PEG(영익)": 1.0, "ROE(E)": 10.0, "영업이익률(E)": 10.0, "fPER": 30.0}
+BASE_GROWTH_CAP = 150.0      # 영익증가율 150% 초과 시 기저효과로 간주
+
+
+def _ok(x, lo=None, hi=None):
+    if x is None or x != x:
+        return False
+    return (lo is None or x >= lo) and (hi is None or x <= hi)
+
+
+def screen(d: dict, sector1: str) -> dict:
+    g = d.get
+    flags, fail = [], []
+    peg1, peg2, pegs1 = g("PEG(영익)1y"), g("PEG(영익)2y"), g("PEG(매출)1y")
+    base = "기저효과" in (g("비고") or "") or _ok(g("영익증가율1y"), lo=BASE_GROWTH_CAP)
+    if base:
+        flags.append("기저효과")
+    eff = peg2 if base else peg1                 # 유효 PEG(영익): 기저효과면 2y CAGR 기준
+    d["유효PEG"] = eff
+    fper, fsite, roe, opm = g("fPER"), g("fPER(사이트)"), g("ROE(E)"), g("영업이익률(E)")
+    if fper and fsite and fsite > 0 and abs(fper / fsite - 1) > 0.3:
+        flags.append("비지배괴리")
+
+    if sector1 == "금융":
+        d.update(Type="금융", 탈락조건="영업이익·PEG 기준 부적합(별도 판단)", 플래그=",".join(flags)); return d
+    if fper is None and g("순이익(E)") is None:
+        d.update(Type="보류", 탈락조건="컨센서스 없음", 플래그=",".join(flags)); return d
+
+    if not _ok(pegs1, hi=CRITERIA["PEG(매출)1y"]): fail.append("PEG매출>1")
+    if not _ok(eff, hi=CRITERIA["PEG(영익)"]): fail.append("PEG영익>1")
+    if not _ok(roe, lo=CRITERIA["ROE(E)"]): fail.append("ROE<10")
+    if not _ok(opm, lo=CRITERIA["영업이익률(E)"]): fail.append("이익률<10")
+    if not _ok(fper, lo=0, hi=CRITERIA["fPER"]): fail.append("fPER>30")
+    d.update(Type="통과" if not fail else "탈락", 탈락조건=",".join(fail), 플래그=",".join(flags))
+    return d
