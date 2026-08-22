@@ -1,22 +1,23 @@
-   name: daily-collect
-   on:
-     schedule:
-       - cron: "30 9 * * 1-5"
-     workflow_dispatch:
-   permissions:
-     contents: write
-   jobs:
-     run:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v4
-         - uses: actions/setup-python@v5
-           with: { python-version: "3.11" }
-         - run: pip install -r requirements.txt
-         - run: python collect.py
-         - run: |
-             git config user.name "bot"
-             git config user.email "bot@users.noreply.github.com"
-             git add data/
-             git diff --cached --quiet || git commit -m "data $(date -u +%Y-%m-%d)"
-             git push
+name: daily-collect
+on:
+  schedule:
+    - cron: "30 9 * * 1-5"   # 평일 KST 18:30
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: playwright install --with-deps chromium
+      - run: python collect.py
+      - run: |
+          git config user.name "bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "data $(date -u +%Y-%m-%d)"
+          git push
