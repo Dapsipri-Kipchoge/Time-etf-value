@@ -141,13 +141,13 @@ def compute_stock(code: str) -> dict:
     d = {**base, "순이익(E)": ni0, "영업이익(E)": op0, "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site,
          **pegs, "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
          "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
-         "배당수익률": g("시가배당률", act[-1]), "추정연도": y0,
+         "배당수익률": g("시가배당률", act[-1]), "추정연도": y0, "전년영업이익률": opm_1, "전년도": act[-1],
          "비고": mcap_note + ("기저효과→PEG(영익)1y 산출불가" if base_effect else "")}
     return d
 
 
 # ───────────────────────── 스크리닝 (단일 기준, 전부 충족 = 통과)
-CRITERIA = {"PEG(매출)1y": 1.0, "PEG(영익)": 1.0, "ROE(E)": 10.0, "영업이익률(E)": 10.0, "fPER": 30.0}
+CRITERIA = {"PEG(매출)1y": 1.0, "PEG(영익)": 1.0, "ROE(E)": 10.0, "영업이익률(E)": 10.0, "fPER": 30.0, "전년영업이익률": 5.0}
 BASE_GROWTH_CAP = 150.0      # 영익증가율 150% 초과 시 기저효과로 간주
 
 
@@ -180,5 +180,6 @@ def screen(d: dict, sector1: str) -> dict:
     if not _ok(roe, lo=CRITERIA["ROE(E)"]): fail.append("ROE<10")
     if not _ok(opm, lo=CRITERIA["영업이익률(E)"]): fail.append("이익률<10")
     if not _ok(fper, lo=0, hi=CRITERIA["fPER"]): fail.append("fPER>30")
+    if not _ok(g("전년영업이익률"), lo=CRITERIA["전년영업이익률"]): fail.append("전년이익률<5")
     d.update(Type="통과" if not fail else "탈락", 탈락조건=",".join(fail), 플래그=",".join(flags))
     return d
