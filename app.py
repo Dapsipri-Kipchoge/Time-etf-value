@@ -68,7 +68,7 @@ except FileNotFoundError:
 
 for c in ("섹터1", "섹터2"):
     if c not in df.columns: df[c] = "미분류"
-for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", float("nan"))):
+for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", float("nan")), ("전년영업이익률", float("nan"))):
     if c not in df.columns: df[c] = dflt
 for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "매출증가율1y", "밸류점수" if "밸류점수" in df.columns else "fPER"):
     df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -152,7 +152,7 @@ def diff_status(cur, old):
     return m.drop(columns=["_merge", "종목명_전"])
 
 
-VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "유효PEG", "영업이익률(E)", "ROE(E)", "밸류점수", "탈락조건", "플래그"]
+VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "유효PEG", "영업이익률(E)", "전년영업이익률", "ROE(E)", "밸류점수", "탈락조건", "플래그"]
 VAL = [c for c in VAL if c in df.columns]
 
 # ───────────────────────── 헤더
@@ -173,7 +173,7 @@ with T[0]:
     m &= df["Type"].isin(types)
     v = df[m].sort_values(sort, ascending=sort in ("유효PEG", "fPER", "Type"), na_position="last")
     T_ = df[df["보유ETF"].fillna("").apply(lambda s: any(e in s.split(",") for e in sel))]
-    kpis([("표시", len(v), "필터 적용", ""), ("통과", int(T_["Type"].eq("통과").sum()), "5개 기준 전부 충족", "up"),
+    kpis([("표시", len(v), "필터 적용", ""), ("통과", int(T_["Type"].eq("통과").sum()), "6개 기준 전부 충족", "up"),
           ("탈락", int(T_["Type"].eq("탈락").sum()), "1개 이상 미달", "dn"),
           ("금융", int(T_["Type"].eq("금융").sum()), "기준 미적용 · 별도 판단", "amb"),
           ("보류", int(T_["Type"].eq("보류").sum()), "컨센서스 없음", "")])
@@ -286,13 +286,14 @@ with T[4]:
 with T[5]:
     st.markdown("""
 <div class="card"><div class="eyebrow">통과 기준</div>
-<p style="margin:6px 0 10px">아래 <b>5개를 전부 충족</b>해야 통과. 섹터 구분 없이 동일 적용. 부족하다고 완화하지 않음.</p>
+<p style="margin:6px 0 10px">아래 <b>6개를 전부 충족</b>해야 통과. 섹터 구분 없이 동일 적용. 부족하다고 완화하지 않음.</p>
 <table class="t"><thead><tr><th class="l">지표</th><th>기준</th><th class="l">계산</th></tr></thead><tbody>
 <tr><td class="l">PEG(매출) 1y</td><td>≤ 1.0</td><td class="l">fPER ÷ 매출증가율(전년 → 당해E, %)</td></tr>
 <tr><td class="l">PEG(영익)</td><td>≤ 1.0</td><td class="l">fPER ÷ 영업이익증가율(1y). <b>기저효과</b>면 2y CAGR 기준으로 대체</td></tr>
 <tr><td class="l">ROE(E)</td><td>≥ 10%</td><td class="l">네이버 당해 추정 ROE(지배주주)</td></tr>
 <tr><td class="l">영업이익률(E)</td><td>≥ 10%</td><td class="l">당해E 영업이익 ÷ 매출</td></tr>
 <tr><td class="l">fPER</td><td>≤ 30</td><td class="l">시가총액 ÷ 당해E 순이익</td></tr>
+<tr><td class="l">전년 영업이익률</td><td>≥ 5%</td><td class="l"><b>확정 실적</b> 기준(직전 회계연도). 컨센만 좋은 턴어라운드 스토리를 거르는 유일한 과거 지표</td></tr>
 </tbody></table></div>
 
 <div class="card"><div class="eyebrow">기저효과 규칙</div>
