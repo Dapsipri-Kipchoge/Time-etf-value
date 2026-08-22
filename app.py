@@ -185,7 +185,7 @@ def table(d: pd.DataFrame, cols, fmt=None, height=620):
     components.html(doc, height=height, scrolling=False)
 
 
-LEFT = {"종목명", "기업", "종목코드", "ETF", "탈락조건", "비고", "섹터1", "섹터2", "보유ETF", "근거", "플래그", "섹터 대안"}
+LEFT = {"종목명", "기업", "종목코드", "ETF", "탈락조건", "비고", "섹터1", "섹터2", "보유ETF", "근거", "플래그", "섹터 대안", "메모"}
 
 
 def kpis(items):
@@ -216,7 +216,7 @@ VAL = [c for c in VAL if c in df.columns]
 st.markdown('<div class="eyebrow">TIME ETF · 국내 8종 · 보유종목 밸류 모니터</div><div class="title">타임폴리오 보유종목 밸류 스크리너</div>', unsafe_allow_html=True)
 st.markdown(f'<div class="note">기준일 {df["기준일"].iloc[0]} · 모집단 {len(df)}종목 · 타임폴리오 구성종목 + 네이버증권 컨센서스 · fPOR=시총÷영업이익(E) · fPER=시총÷순이익(E) · 개인용</div>', unsafe_allow_html=True)
 
-T = st.tabs(["밸류 스크리닝", "섹터 베스트", "포트폴리오 제안", "ETF별 보유현황", "일일 변동", "기준 설명"])
+T = st.tabs(["밸류 스크리닝", "섹터 베스트", "포트폴리오 제안", "ETF별 보유현황", "일일 변동", "워치리스트", "기준 설명"])
 
 # ═════════ 1. 스크리닝
 with T[0]:
@@ -359,8 +359,24 @@ with T[4]:
         table(pv, list(pv.columns), height=500)
 
 
-# ═════════ 6. 기준 설명
+# ═════════ 6. 워치리스트
 with T[5]:
+    try:
+        W = pd.read_csv("data/watchlist.csv", dtype={"종목코드": str})
+        for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "전년영업이익률", "매출증가율1y", "시총(억)"):
+            if c in W.columns: W[c] = pd.to_numeric(W[c], errors="coerce")
+        for c, dflt in (("Type", "탈락"), ("플래그", ""), ("메모", "")):
+            if c not in W.columns: W[c] = dflt
+        st.markdown('<div class="note">타임폴리오 모집단과 별개로 수기 관리하는 관심종목 · 같은 6개 기준으로 판정 · 매일 함께 수집</div>', unsafe_allow_html=True)
+        kpis([("종목", len(W), "워치리스트", ""), ("통과", int(W["Type"].eq("통과").sum()), "6개 기준 전부", "up"),
+              ("탈락", int(W["Type"].eq("탈락").sum()), "", "dn")])
+        table(W, ["종목명", "섹터1", "섹터2", "Type", "현재가", "시총(억)", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "유효PEG",
+                  "영업이익률(E)", "전년영업이익률", "ROE(E)", "매출증가율1y", "탈락조건", "플래그", "메모"], height=300)
+    except FileNotFoundError:
+        st.info("data/watchlist.csv 없음 — 다음 수집부터 표시됩니다.")
+
+# ═════════ 7. 기준 설명
+with T[6]:
     st.markdown("""
 <div class="card"><div class="eyebrow">통과 기준</div>
 <p style="margin:6px 0 10px">아래 <b>6개를 전부 충족</b>해야 통과. 섹터 구분 없이 동일 적용. 부족하다고 완화하지 않음.</p>
