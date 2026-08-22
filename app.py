@@ -47,6 +47,8 @@ table.t tr:hover td{background:#16213B}
 .bar{height:10px;background:#16203A;border-radius:6px;overflow:hidden;display:flex}
 .bar i{display:block;height:100%}
 .stTabs [data-baseweb="tab"]{font-weight:600;font-size:14px}
+.stButton>button{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;font-size:12px;padding:4px 10px}
+.stButton>button:hover{border-color:var(--dn);color:var(--dn)}
 .note{font-size:12px;color:var(--mut)}
 </style>"""
 st.markdown(CSS, unsafe_allow_html=True)
@@ -264,14 +266,17 @@ with T[2]:
     c = st.columns(4)
     n = c[0].slider("종목 수", 5, 15, 10); per_sec = c[1].slider("섹터당 최대 종목", 1, 3, 2)
     cap = c[2].slider("섹터 비중 상한(%)", 15, 40, 25); style = c[3].selectbox("성향", ["균형", "성장(PEG 중심)", "퀄리티(ROE 중심)"])
-    c = st.columns([2, 1, 1])
     passed = df[(df["Type"] == "통과") & df["밸류점수"].notna()]
-    excl = c[0].multiselect("제외 종목 (빼면 같은 섹터 다음 후보로 재구성)", sorted(passed["종목명"]), default=[])
+    if "excl" not in st.session_state: st.session_state.excl = []
+    c = st.columns([3, 1])
     mc_max_t = c[1].slider("시총 상한(조원, 0=제한 없음)", 0, 500, 0, step=5)
-    big_exclude = c[2].checkbox("삼성전자·SK하이닉스 제외", value=False)
-    cand = passed.copy()
-    if excl: cand = cand[~cand["종목명"].isin(excl)]
-    if big_exclude: cand = cand[~cand["종목명"].isin(["삼성전자", "SK하이닉스"])]
+    if st.session_state.excl:
+        chips = " ".join(f'<span class="bd fail">{html.escape(x)}</span>' for x in st.session_state.excl)
+        c[0].markdown(f'<div class="note" style="margin-top:28px">제외 중: {chips}</div>', unsafe_allow_html=True)
+        if c[0].button("제외 초기화", key="excl_reset"): st.session_state.excl = []; st.rerun()
+    else:
+        c[0].markdown('<div class="note" style="margin-top:34px">표 아래 ✕ 버튼으로 종목을 빼면 같은 섹터의 다음 후보로 자동 재구성됨</div>', unsafe_allow_html=True)
+    cand = passed[~passed["종목명"].isin(st.session_state.excl)].copy()
     if mc_max_t: cand = cand[cand["시총(억)"].fillna(0) <= mc_max_t * 10000]
     cand["티어"] = 1
     if style == "성장(PEG 중심)": cand["정렬"] = cand["밸류점수"] - cand["PEG(영익)1y"].fillna(cand["PEG(영익)2y"]).fillna(1) * 20
@@ -311,6 +316,10 @@ with T[2]:
               ("가중 ROE", f'{(P["ROE(E)"].fillna(0) * w).sum():.0f}%', "비중가중", "amb")])
         st.markdown(f'<div class="card"><div class="note" style="margin-bottom:6px">섹터 배분</div><div class="bar">{bar}</div><div class="note" style="margin-top:8px">{leg}</div></div>', unsafe_allow_html=True)
         table(P, ["Type", "종목명", "섹터1", "섹터2", "비중(%)", "밸류점수", "fPER", "유효PEG", "ROE(E)", "시총(억)", "보유ETF수", "플래그", "근거", "섹터 대안"], height=520)
+        bc = st.columns(min(len(P), 5))
+        for i, (_, r) in enumerate(P.iterrows()):
+            if bc[i % len(bc)].button(f"✕ {r['종목명']}", key=f"ex_{r['종목코드']}", help=f"{r['섹터1']} · 대안: {r['섹터 대안']}"):
+                st.session_state.excl.append(r["종목명"]); st.rerun()
         if len(P) < n: st.markdown(f'<div class="note">통과 종목이 {len(P)}개라 {n}개를 채우지 못함 — 기준 완화 없이 그대로 표시</div>', unsafe_allow_html=True)
         st.markdown('<div class="note">통과 종목만으로 규칙 구성(밸류점수·섹터 분산)이며 투자 권유가 아님.</div>', unsafe_allow_html=True)
 
