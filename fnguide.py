@@ -40,8 +40,19 @@ def parse_header(soup):
     price = mcap = None
     el = soup.select_one("p.no_today span.blind")
     if el: price = to_num(el.get_text())
+    text = soup.get_text(" ")
+    # 1) id 셀렉터  2) 텍스트 정규식  3) 상장주식수 × 현재가
     el = soup.select_one("#_market_sum")
-    if el: mcap = to_num(re.sub(r"\s", "", el.get_text()))       # 억원
+    if el: mcap = to_num(re.sub(r"\s", "", el.get_text()))
+    if not mcap:
+        m = re.search(r"시가총액\s*([\d,\s]+?)\s*억원", text)
+        if m: mcap = to_num(re.sub(r"\s", "", m.group(1)))
+    if not mcap and price:
+        m = re.search(r"상장주식수\s*([\d,]+)", text)
+        if m and to_num(m.group(1)):
+            mcap = price * to_num(m.group(1)) / 1e8
+    if not mcap:
+        print(f"  [debug] 시총 파싱 실패: {name}")
     return name, price, mcap
 
 
@@ -106,6 +117,9 @@ def compute_stock(code: str) -> dict:
     hist = {n: (g("매출액", act[-n]), g("영업이익", act[-n])) for n in (1, 2, 3) if len(act) >= n}
     rev_1, op_1 = hist.get(1, (None, None))
 
+    fper_site = g("PER", y0)
+    if not mcap and fper_site and ni0 and ni0 > 0:          # 시총 못 읽으면 네이버 PER(E)로 역산
+        mcap = fper_site * ni0
     fpor = mcap / rev0 if mcap and rev0 else None
     fper = mcap / ni0 if mcap and ni0 and ni0 > 0 else None
     opm0 = op0 / rev0 * 100 if op0 is not None and rev0 else None
@@ -119,7 +133,7 @@ def compute_stock(code: str) -> dict:
     if base_effect:
         pegs["PEG(영익)1y"] = None
 
-    d = {**base, "fPOR": fpor, "fPER": fper, "fPER(사이트)": g("PER", y0),
+    d = {**base, "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site,
          **pegs, "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
          "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
          "배당수익률": g("시가배당률", act[-1]), "추정연도": y0,
