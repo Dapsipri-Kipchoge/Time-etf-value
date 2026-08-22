@@ -110,22 +110,77 @@ def num(x, d=2, signed=False, suffix=""):
     return f'<span class="{cls}">{s}{suffix}</span>'
 
 
+TBL_CSS = """
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#0B1220;--card:#121B2F;--line:#1F2B47;--txt:#E6EDF7;--mut:#8A97B0;--acc:#4C8DFF;--up:#2ED47A;--dn:#FF5C6C;--amb:#F5B942;--mono:'JetBrains Mono',ui-monospace,monospace}
+body{margin:0;background:transparent;color:var(--txt);font-family:Pretendard,-apple-system,sans-serif}
+.wrap{border:1px solid var(--line);border-radius:10px;overflow:auto;height:calc(100vh - 4px);background:var(--bg)}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{position:sticky;top:0;z-index:1;background:#0F1728;color:var(--mut);font-weight:600;text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);font-size:11.5px;letter-spacing:.04em;white-space:nowrap;cursor:pointer;user-select:none}
+table.t th:hover{color:var(--txt)} table.t th.on{color:var(--acc)}
+table.t th.l,table.t td.l{text-align:left}
+table.t td{padding:7px 10px;border-bottom:1px solid #16203A;text-align:right;font-family:var(--mono);white-space:nowrap}
+table.t td.l{font-family:Pretendard;font-weight:600}
+table.t tr:hover td{background:#16213B}
+.pos{color:var(--up)}.neg{color:var(--dn)}.na{color:#4C5875}
+.bd{display:inline-block;padding:2px 8px;border-radius:6px;font:600 11px var(--mono);letter-spacing:.02em;cursor:pointer}
+.bd.new{background:var(--up);color:#04130a}.bd.exp{border:1px solid var(--up);color:var(--up)}
+.bd.shr{border:1px solid var(--dn);color:var(--dn)}.bd.out{background:var(--dn);color:#fff}
+.bd.keep{border:1px solid var(--line);color:var(--mut)}.bd.pass{border:1px solid var(--up);color:var(--up)}
+.bd.fail{border:1px solid var(--dn);color:var(--dn)}.bd.hold{border:1px solid var(--amb);color:var(--amb)}
+.bd.sec{background:#1B2A4A;color:#9FC0FF}.bd.flag{border:1px dashed var(--amb);color:var(--amb)}
+.bd.active{outline:2px solid var(--acc);outline-offset:1px}
+.hint{font:11px var(--mono);color:var(--mut);padding:6px 10px;position:sticky;left:0}
+.hint b{color:var(--acc)}
+"""
+TBL_JS = """
+<script>
+(function(){
+ const tbl=document.querySelector('table.t'), ths=[...tbl.tHead.rows[0].cells], body=tbl.tBodies[0], hint=document.getElementById('hint');
+ let rows=[...body.rows], filt={}, sortCol=-1, asc=true;
+ const keyOf=(tr,i)=>{const td=tr.cells[i]; const n=td.dataset.n; return n!==undefined? (n===''?null:parseFloat(n)) : td.textContent.trim();};
+ function render(){
+  let r=rows.filter(tr=>Object.entries(filt).every(([i,v])=>tr.cells[i].textContent.trim()===v));
+  if(sortCol>=0){r.sort((a,b)=>{const x=keyOf(a,sortCol),y=keyOf(b,sortCol);
+    if(x===null||x==='')return 1; if(y===null||y==='')return -1;
+    if(typeof x==='number'&&typeof y==='number')return asc?x-y:y-x;
+    return asc?String(x).localeCompare(String(y),'ko'):String(y).localeCompare(String(x),'ko');});}
+  body.replaceChildren(...r);
+  ths.forEach((th,i)=>{th.classList.toggle('on',i===sortCol); th.textContent=th.dataset.t+(i===sortCol?(asc?' ▲':' ▼'):'');});
+  const f=Object.entries(filt).map(([i,v])=>ths[i].dataset.t+'='+v).join(', ');
+  hint.innerHTML=r.length+'행'+(f?' · 필터 <b>'+f+'</b> (배지 다시 클릭 시 해제)':' · 머리글 클릭=정렬 · 배지 클릭=필터');
+  document.querySelectorAll('.bd.active').forEach(e=>e.classList.remove('active'));
+  Object.entries(filt).forEach(([i,v])=>r.forEach(tr=>{const b=tr.cells[i].querySelector('.bd'); if(b)b.classList.add('active');}));
+ }
+ ths.forEach((th,i)=>{th.dataset.t=th.textContent; th.onclick=()=>{if(sortCol===i)asc=!asc;else{sortCol=i;asc=true;} render();};});
+ body.addEventListener('click',e=>{const b=e.target.closest('.bd'); if(!b)return; const td=b.closest('td'), i=td.cellIndex, v=b.textContent.trim();
+   if(filt[i]===v)delete filt[i]; else filt[i]=v; render();});
+ render();
+})();
+</script>"""
+
+
 def table(d: pd.DataFrame, cols, fmt=None, height=620):
+    import streamlit.components.v1 as components
     fmt = fmt or {}
     th = "".join(f'<th class="{"l" if c in LEFT else ""}">{html.escape(c)}</th>' for c in cols)
     rows = []
     for _, r in d.iterrows():
         tds = []
         for c in cols:
-            v = r.get(c)
+            v = r.get(c); data = ""
             if c in fmt: cell = fmt[c](v)
             elif c in ("상태", "1차결과", "일차", "이차", "Type"): cell = badge(v)
             elif c in ("섹터1", "섹터2"): cell = f'<span class="bd sec">{html.escape(str(v))}</span>'
-            elif isinstance(v, (int, float)) and not isinstance(v, bool): cell = num(v, 0 if c.startswith("수량") else 2, signed=c.endswith("증감"))
+            elif c == "플래그": cell = " ".join(f'<span class="bd flag">{html.escape(x)}</span>' for x in str(v).split(",") if x and x == x and x != "nan") if v == v and v else '<span class="na">—</span>'
+            elif isinstance(v, (int, float)) and not isinstance(v, bool):
+                cell = num(v, 0 if c.startswith("수량") else 2, signed=c.endswith("증감")); data = f' data-n="{"" if v != v else v}"'
             else: cell = html.escape("" if v != v or v is None else str(v))
-            tds.append(f'<td class="{"l" if c in LEFT else ""}">{cell}</td>')
+            tds.append(f'<td class="{"l" if c in LEFT else ""}"{data}>{cell}</td>')
         rows.append("<tr>" + "".join(tds) + "</tr>")
-    st.markdown(f'<div class="scroll" style="max-height:{height}px"><table class="t"><thead><tr>{th}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>', unsafe_allow_html=True)
+    doc = f'<style>{TBL_CSS}</style><div class="wrap"><div class="hint" id="hint"></div><table class="t"><thead><tr>{th}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>{TBL_JS}'
+    components.html(doc, height=height, scrolling=False)
 
 
 LEFT = {"종목명", "기업", "종목코드", "ETF", "탈락조건", "비고", "섹터1", "섹터2", "보유ETF", "근거", "플래그"}
@@ -167,7 +222,7 @@ with T[0]:
     etfs = sorted({e for s in df["보유ETF"].dropna() for e in s.split(",")})
     sel = c[0].multiselect("ETF", etfs, default=etfs)
     secs = c[1].multiselect("섹터", [s for s in ORDER if s in set(df["섹터1"])], default=[])
-    types = c[2].multiselect("판정", ["통과", "탈락", "금융", "보류"], default=["통과", "탈락"]); sort = c[3].selectbox("정렬", ["Type", "밸류점수", "유효PEG", "fPER", "ROE(E)", "최대비중"])
+    types = c[2].multiselect("판정", ["통과", "탈락", "금융", "보류"], default=["통과", "탈락"]); sort = c[3].selectbox("기본 정렬", ["Type", "밸류점수", "유효PEG", "fPER", "ROE(E)", "최대비중"])
     m = df["보유ETF"].fillna("").apply(lambda s: any(e in s.split(",") for e in sel))
     if secs: m &= df["섹터1"].isin(secs)
     m &= df["Type"].isin(types)
