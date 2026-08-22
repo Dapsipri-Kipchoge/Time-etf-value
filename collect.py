@@ -2,7 +2,7 @@
 타임폴리오 국내 ETF 8종 보유종목(합집합) → FnGuide CompanyGuide 컨센서스 → data/*.csv
 실행: python collect.py
 """
-import io, re, time, datetime as dt
+import io, os, re, time, datetime as dt
 import requests, pandas as pd
 from bs4 import BeautifulSoup
 
@@ -39,11 +39,17 @@ def etf_holdings(idx: int) -> pd.DataFrame:
                 break
     if df is None:
         raise RuntimeError(f"ETF idx={idx} 구성종목 표 없음")
+    print(f"  [debug] idx={idx} columns={list(df.columns)} rows={len(df)}")
     df.columns = [re.sub(r"\s+", "", str(c)) for c in df.columns]
     wcol = next(c for c in df.columns if c.startswith("비중"))
     df = df.rename(columns={wcol: "비중"})[["종목코드", "종목명", "비중"]]
-    df["종목코드"] = df["종목코드"].astype(str).str.zfill(6)
-    df = df[df["종목코드"].str.fullmatch(r"\d{6}")]           # 현금·기타 제외
+    def norm(x):  # 5930.0 / 5930 / "005930" → "005930"
+        s = str(x).strip()
+        if s.endswith(".0"):
+            s = s[:-2]
+        return s.zfill(6) if s.isdigit() else s
+    df["종목코드"] = df["종목코드"].map(norm)
+    df = df[df["종목코드"].str.fullmatch(r"[0-9A-Z]{6}") & df["종목코드"].str[0].str.isdigit()]  # 현금·기타 제외
     df = df[~df["종목명"].str.contains("ETF|KODEX|TIGER|채권|선물", na=False)]
     df["비중"] = pd.to_numeric(df["비중"], errors="coerce")
     return df
@@ -71,6 +77,7 @@ def build_universe() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    os.makedirs("data", exist_ok=True)
     today = dt.date.today().isoformat()
     uni = build_universe()
     uni.to_csv("data/universe.csv", index=False, encoding="utf-8-sig")
