@@ -118,9 +118,12 @@ def compute_stock(code: str) -> dict:
     rev_1, op_1 = hist.get(1, (None, None))
 
     fper_site = g("PER", y0)
-    if not mcap and fper_site and ni0 and ni0 > 0:          # 시총 못 읽으면 네이버 PER(E)로 역산
+    mcap_note = ""
+    if not mcap and fper_site and ni0 and ni0 > 0:          # 시총 못 읽으면 네이버 PER(E)로 역산(예외)
         mcap = fper_site * ni0
-    fpor = mcap / rev0 if mcap and rev0 else None
+        mcap_note = "시총역산;"
+    # 직접 산출: 시가총액 ÷ 당해(E) 영업이익 / 순이익  (네이버 기업실적분석, 단위 억원)
+    fpor = mcap / op0 if mcap and op0 and op0 > 0 else None
     fper = mcap / ni0 if mcap and ni0 and ni0 > 0 else None
     opm0 = op0 / rev0 * 100 if op0 is not None and rev0 else None
     opm_1 = op_1 / rev_1 * 100 if op_1 is not None and rev_1 else None
@@ -137,7 +140,7 @@ def compute_stock(code: str) -> dict:
          **pegs, "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
          "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
          "배당수익률": g("시가배당률", act[-1]), "추정연도": y0,
-         "비고": "기저효과→PEG(영익)1y 산출불가" if base_effect else ""}
+         "비고": mcap_note + ("기저효과→PEG(영익)1y 산출불가" if base_effect else "")}
     d.update(first_filter(d))
     return d
 
@@ -146,6 +149,8 @@ def first_filter(d: dict) -> dict:
     """국내 1차 정량필터 4조건 (ROIC/WACC 제외). 2개 이상 → 탈락"""
     p1, p2, p3 = d.get("PEG(영익)1y"), d.get("PEG(영익)2y"), d.get("PEG(영익)3y")
     roe = d.get("ROE(E)")
+    if d.get("fPER") is None or all(p is None for p in (p1, p2, p3)):
+        return {"탈락조건": "핵심지표 산출불가", "1차결과": "판정보류"}
     hits = []
     if p1 is not None and p2 is not None and p3 is not None and p1 > p2 > p3:
         hits.append("PEG악화추세")
