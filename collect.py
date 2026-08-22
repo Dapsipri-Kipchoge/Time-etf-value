@@ -6,7 +6,7 @@ import io, os, re, time, datetime as dt
 import requests, pandas as pd
 from bs4 import BeautifulSoup
 
-from fnguide import compute_stock
+from fnguide import compute_stock, screen
 from sectors import classify
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -106,6 +106,7 @@ if __name__ == "__main__":
         d.update(보유ETF수=r["보유ETF수"], 보유ETF=r["보유ETF"], 최대비중=r["최대비중"])
         d["섹터1"], d["섹터2"] = classify(r["종목명"], d.get("네이버업종"))
         d["종목명"] = r["종목명"]
+        d = screen(d, d["섹터1"])
         rows.append(d)
         print(f"  {r['종목명']}: {d.get('비고', 'ok')}")
         time.sleep(1.5)                                         # 차단 방지
