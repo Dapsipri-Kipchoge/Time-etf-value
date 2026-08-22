@@ -102,7 +102,9 @@ def compute_stock(code: str) -> dict:
     html = fetch(code)
     fin, soup = parse_finance(html)
     name, price, mcap = parse_header(soup)
-    base = {"종목코드": code, "기업": name, "현재가": price, "시총(억)": mcap}
+    sec = soup.select_one("a[href*='sise_group_detail']")
+    naver_sec = sec.get_text(strip=True) if sec else ""
+    base = {"종목코드": code, "기업": name, "현재가": price, "시총(억)": mcap, "네이버업종": naver_sec}
     years = [c for c in fin.columns if re.fullmatch(r"\d{4}\.\d{2}(\(E\))?", c)]
     est = [y for y in years if "(E)" in y]
     act = [y for y in years if "(E)" not in y]
