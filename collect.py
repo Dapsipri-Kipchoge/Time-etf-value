@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 from fnguide import compute_stock, screen
 from sectors import classify
+from watchlist import WATCHLIST
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 TIME_ETFS = {  # idx: (ETF코드, 이름)  — timeetf.co.kr/m11_list.php?cate=002
@@ -113,6 +114,19 @@ if __name__ == "__main__":
 
     out = pd.DataFrame(rows)
     out["기준일"] = today
+
+    # ── 워치리스트 (별도 파일)
+    wrows = []
+    for code, (nm, s1, s2, memo) in WATCHLIST.items():
+        try:
+            d = compute_stock(code)
+        except Exception as e:
+            d = {"종목코드": code, "기업": nm, "비고": f"실패: {e}"}
+        d.update(종목명=nm, 섹터1=s1, 섹터2=s2, 메모=memo, 기준일=today)
+        d = screen(d, s1)
+        wrows.append(d); print(f"  [watch] {nm}: {d.get('Type')}")
+        time.sleep(1.5)
+    pd.DataFrame(wrows).to_csv("data/watchlist.csv", index=False, encoding="utf-8-sig")
     out.to_csv("data/result.csv", index=False, encoding="utf-8-sig")
     out.to_csv(f"data/result_{today}.csv", index=False, encoding="utf-8-sig")
     print("완료")
