@@ -216,7 +216,7 @@ VAL = [c for c in VAL if c in df.columns]
 st.markdown('<div class="eyebrow">TIME ETF · 국내 8종 · 보유종목 밸류 모니터</div><div class="title">타임폴리오 보유종목 밸류 스크리너</div>', unsafe_allow_html=True)
 st.markdown(f'<div class="note">기준일 {df["기준일"].iloc[0]} · 모집단 {len(df)}종목 · 타임폴리오 구성종목 + 네이버증권 컨센서스 · fPOR=시총÷영업이익(E) · fPER=시총÷순이익(E) · 개인용</div>', unsafe_allow_html=True)
 
-T = st.tabs(["밸류 스크리닝", "섹터 베스트", "포트폴리오 제안", "ETF별 보유현황", "일일 변동", "워치리스트", "기준 설명"])
+T = st.tabs(["밸류 스크리닝", "포트폴리오 제안", "ETF별 보유현황", "일일 변동", "워치리스트", "기준 설명"])
 
 # ═════════ 1. 스크리닝
 with T[0]:
@@ -237,32 +237,8 @@ with T[0]:
     table(v, ["종목명", "섹터1", "섹터2", "보유ETF수", "최대비중"] + VAL)
     st.download_button("CSV 다운로드", v.to_csv(index=False).encode("utf-8-sig"), "screen.csv")
 
-# ═════════ 2. 섹터 베스트
+# ═════════ 2. 포트폴리오 제안
 with T[1]:
-    elig = df[df["밸류점수"].notna()].copy(); elig["티어"] = (elig["Type"] == "통과").astype(int)
-    leaders = elig.sort_values(["티어", "밸류점수"], ascending=False).groupby("섹터1").head(1)
-    leaders["o"] = leaders["섹터1"].map({s: i for i, s in enumerate(ORDER)}); leaders = leaders.sort_values("o")
-    def _card(r):
-        m = [f'Type {r["Type"]}']
-        if pd.notna(r.get("유효PEG")): m.append(f'PEG {r["유효PEG"]:.2f}')
-        if pd.notna(r.get("fPER")): m.append(f'fPER {r["fPER"]:.1f}')
-        return f'<div class="c"><div class="s">{html.escape(str(r["섹터1"]))}</div><div class="n">{html.escape(str(r["종목명"]))}</div><div class="m">{" · ".join(m)}</div></div>'
-    cards = "".join(_card(r) for _, r in leaders.iterrows())
-    st.markdown(f'<div class="note" style="margin-bottom:6px">섹터별 밸류점수 1위</div><div class="lead">{cards}</div>', unsafe_allow_html=True)
-    pick = st.radio("섹터", [s for s in ORDER if s in set(df["섹터1"])], horizontal=True, label_visibility="collapsed")
-    sd = df[df["섹터1"] == pick].sort_values("밸류점수", ascending=False, na_position="last")
-    topn = st.slider("세부섹터별 상위", 1, 5, 3)
-    best = sd[sd["밸류점수"].notna()].groupby("섹터2").head(topn)
-    kpis([("섹터 종목", len(sd), pick, ""), ("통과", int(sd["Type"].eq("통과").sum()), "기준 전부 충족", "up"),
-          ("섹터 중앙 fPER", f'{sd["fPER"].median():.1f}' if sd["fPER"].notna().any() else "—", "동일섹터 비교 기준", "amb"),
-          ("섹터 중앙 PEG", f'{sd["PEG(영익)1y"].median():.2f}' if sd["PEG(영익)1y"].notna().any() else "—", "영익 1y", "amb")])
-    st.markdown(f'<div class="note">세부섹터별 상위 {topn}개 · 밸류점수 순</div>', unsafe_allow_html=True)
-    table(best, ["섹터2", "종목명", "Type", "보유ETF수", "최대비중", "밸류점수", "fPOR", "fPER", "PEG(매출)1y", "유효PEG", "영업이익률(E)", "ROE(E)", "매출증가율1y", "플래그"], height=480)
-    with st.expander(f"{pick} 전체 보기"):
-        table(sd, ["섹터2", "종목명", "보유ETF수"] + VAL, height=500)
-
-# ═════════ 3. 포트폴리오 제안
-with T[2]:
     c = st.columns(4)
     n = c[0].slider("종목 수", 5, 15, 10); per_sec = c[1].slider("섹터당 최대 종목", 1, 3, 2)
     cap = c[2].slider("섹터 비중 상한(%)", 15, 40, 25); style = c[3].selectbox("성향", ["균형", "성장(PEG 중심)", "퀄리티(ROE 중심)"])
@@ -323,8 +299,8 @@ with T[2]:
         if len(P) < n: st.markdown(f'<div class="note">통과 종목이 {len(P)}개라 {n}개를 채우지 못함 — 기준 완화 없이 그대로 표시</div>', unsafe_allow_html=True)
         st.markdown('<div class="note">통과 종목만으로 규칙 구성(밸류점수·섹터 분산)이며 투자 권유가 아님.</div>', unsafe_allow_html=True)
 
-# ═════════ 4. ETF별
-with T[3]:
+# ═════════ 3. ETF별
+with T[2]:
     if latest.empty: st.info("보유 스냅샷 없음 — 다음 수집부터 표시됩니다.")
     else:
         pick = st.radio("ETF", sorted(latest["ETF"].unique()), horizontal=True, label_visibility="collapsed")
@@ -335,8 +311,8 @@ with T[3]:
               ("축소", int((d["상태"] == "축소").sum()), "수량 −10%↓", "dn"), ("제외", int((d["상태"] == "제외").sum()), "전량 매도", "dn")])
         table(d, ["상태", "종목명", "섹터1", "Type", "수량", "수량증감", "비중", "비중증감", "밸류점수", "fPOR", "fPER", "유효PEG", "ROE(E)", "플래그"])
 
-# ═════════ 5. 일일 변동
-with T[4]:
+# ═════════ 4. 일일 변동
+with T[3]:
     if prev is None: st.info("직전 스냅샷이 없음 — 다음 수집일부터 신규·확대·축소·제외가 표시됩니다.")
     else:
         allc = diff_status(latest, prev); chg = allc[allc["상태"].isin(["신규", "확대", "축소", "제외"])].copy()
@@ -359,8 +335,8 @@ with T[4]:
         table(pv, list(pv.columns), height=500)
 
 
-# ═════════ 6. 워치리스트
-with T[5]:
+# ═════════ 5. 워치리스트
+with T[4]:
     try:
         W = pd.read_csv("data/watchlist.csv", dtype={"종목코드": str})
         for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "전년영업이익률", "매출증가율1y", "시총(억)"):
@@ -375,8 +351,8 @@ with T[5]:
     except FileNotFoundError:
         st.info("data/watchlist.csv 없음 — 다음 수집부터 표시됩니다.")
 
-# ═════════ 7. 기준 설명
-with T[6]:
+# ═════════ 6. 기준 설명
+with T[5]:
     st.markdown("""
 <div class="card"><div class="eyebrow">통과 기준</div>
 <p style="margin:6px 0 10px">아래 <b>6개를 전부 충족</b>해야 통과. 섹터 구분 없이 동일 적용. 부족하다고 완화하지 않음.</p>
