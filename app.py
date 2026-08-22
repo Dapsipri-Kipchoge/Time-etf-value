@@ -84,7 +84,8 @@ def value_score(d: pd.DataFrame) -> pd.Series:
     for s, higher, w in comp.values():
         r = s[ok].rank(pct=True); r = r if higher else 1 - r
         score = score.add(r * w, fill_value=0); wsum = wsum.add(s.notna().astype(float) * w, fill_value=0)
-    out = (score / wsum.replace(0, pd.NA) * 100).round(1)
+    import numpy as np
+    out = (score / wsum.replace(0, np.nan) * 100).astype(float).round(1)
     return out.where(ok)
 
 
@@ -140,7 +141,7 @@ def diff_status(cur, old):
     m["종목명"] = m["종목명"].fillna(m["종목명_전"])
     m["상태"] = "유지"
     m.loc[m["_merge"] == "left_only", "상태"] = "신규"; m.loc[m["_merge"] == "right_only", "상태"] = "제외"
-    both = m["_merge"] == "both"; chg = (m["수량"] - m["수량_전"]) / m["수량_전"].replace(0, pd.NA)
+    both = m["_merge"] == "both"; chg = (m["수량"] - m["수량_전"]) / m["수량_전"].replace(0, float("nan"))
     m.loc[both & (chg >= EXPAND), "상태"] = "확대"; m.loc[both & (chg <= SHRINK), "상태"] = "축소"
     m["수량증감"] = m["수량"] - m["수량_전"]; m["비중증감"] = m["비중"] - m["비중_전"]
     return m.drop(columns=["_merge", "종목명_전"])
