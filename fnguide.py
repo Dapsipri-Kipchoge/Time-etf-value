@@ -19,11 +19,28 @@ def to_num(x):
         return None
 
 
+_pw = _browser = None
 def fetch(code):
-    r = requests.get(URL.format(code=code), headers=HEADERS, timeout=10)
-    r.raise_for_status()
-    r.encoding = "utf-8"
-    return r.text
+    """headless 크롬으로 로드 (브라우저는 1회 생성 후 재사용)"""
+    global _pw, _browser
+    from playwright.sync_api import sync_playwright
+    if _browser is None:
+        _pw = sync_playwright().start()
+        _browser = _pw.chromium.launch()
+    pg = _browser.new_page(user_agent=HEADERS["User-Agent"], locale="ko-KR")
+    try:
+        pg.goto(URL.format(code=code), wait_until="domcontentloaded", timeout=60000)
+        try:
+            pg.wait_for_selector("table", timeout=15000)
+        except Exception:
+            pass
+        html = pg.content()
+        title = pg.title()
+    finally:
+        pg.close()
+    if "highlight" not in html:
+        print(f"  [debug] {code} title={title!r} len={len(html)} has_매출액={'매출액' in html}")
+    return html
 
 
 def parse_header(soup):
@@ -40,15 +57,27 @@ def parse_header(soup):
 
 
 def parse_highlight(soup):
-    tbl = soup.select_one("#highlight_D_A table")
-    if tbl is None:
-        raise RuntimeError("highlight_D_A 없음")
-    df = pd.read_html(io.StringIO(str(tbl)))[0]
-    df.columns = [c[-1] if isinstance(c, tuple) else c for c in df.columns]
-    df = df.rename(columns={df.columns[0]: "항목"}).set_index("항목")
-    df.index = [re.sub(r"\s+", "", i) for i in df.index]
-    df.columns = [re.sub(r"\s+", "", str(c)) for c in df.columns]
-    return df
+    """Financial Highlight 연결/연간 표. id 우선, 없으면 '매출액' 행과 '(E)' 열이 있는 첫 표"""
+    cands = []
+    node = soup.select_one("#highlight_D_A table")
+    if node is not None:
+        cands.append(node)
+    cands += soup.select("table")
+    for tbl in cands:
+        txt = tbl.get_text(" ")
+        if "매출액" not in txt or "(E)" not in txt:
+            continue
+        try:
+            df = pd.read_html(io.StringIO(str(tbl)))[0]
+        except Exception:
+            continue
+        df.columns = [c[-1] if isinstance(c, tuple) else c for c in df.columns]
+        df = df.rename(columns={df.columns[0]: "항목"}).set_index("항목")
+        df.index = [re.sub(r"\s+", "", str(i)) for i in df.index]
+        df.columns = [re.sub(r"\s+", "", str(c)) for c in df.columns]
+        if "매출액" in df.index and any("(E)" in c and "/12" in c for c in df.columns):
+            return df
+    raise RuntimeError("Financial Highlight 표 없음")
 
 
 def cagr(cur, base, n):
