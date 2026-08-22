@@ -47,7 +47,11 @@ def etf_holdings(idx: int) -> pd.DataFrame:
     print(f"  [debug] idx={idx} columns={list(df.columns)} rows={len(df)}")
     df.columns = [re.sub(r"\s+", "", str(c)) for c in df.columns]
     wcol = next(c for c in df.columns if c.startswith("비중"))
-    df = df.rename(columns={wcol: "비중"})[["종목코드", "종목명", "비중"]]
+    qcol = next((c for c in df.columns if c.startswith("수량")), None)
+    df = df.rename(columns={wcol: "비중", qcol: "수량"} if qcol else {wcol: "비중"})
+    if "수량" not in df.columns:
+        df["수량"] = None
+    df = df[["종목코드", "종목명", "수량", "비중"]]
     def norm(x):  # 5930.0 / 5930 / "005930" → "005930"
         s = str(x).strip()
         if s.endswith(".0"):
@@ -57,10 +61,11 @@ def etf_holdings(idx: int) -> pd.DataFrame:
     df = df[df["종목코드"].str.fullmatch(r"[0-9A-Z]{6}") & df["종목코드"].str[0].str.isdigit()]
     df = df[~df["종목명"].astype(str).str.contains("ETF|KODEX|TIGER|채권|선물|현금", na=False)]
     df["비중"] = pd.to_numeric(df["비중"], errors="coerce")
+    df["수량"] = pd.to_numeric(df["수량"].astype(str).str.replace(",", ""), errors="coerce")
     return df
 
 
-def build_universe() -> pd.DataFrame:
+def build_universe():
     frames = []
     for idx, (ecode, ename) in TIME_ETFS.items():
         try:
@@ -71,21 +76,24 @@ def build_universe() -> pd.DataFrame:
         except Exception as e:
             print(f"[ETF] {ename} 실패: {e}")
         time.sleep(1)
-    all_ = pd.concat(frames)
+    all_ = pd.concat(frames)[["ETF", "종목코드", "종목명", "수량", "비중"]]
     uni = (all_.groupby(["종목코드", "종목명"])
            .agg(보유ETF수=("ETF", "nunique"),
                 보유ETF=("ETF", lambda s: ",".join(sorted(set(s)))),
                 최대비중=("비중", "max"))
            .reset_index()
            .sort_values(["보유ETF수", "최대비중"], ascending=False))
-    return uni
+    return uni, all_
 
 
 if __name__ == "__main__":
     os.makedirs("data", exist_ok=True)
     today = dt.date.today().isoformat()
-    uni = build_universe()
+    uni, holdings = build_universe()
     uni.to_csv("data/universe.csv", index=False, encoding="utf-8-sig")
+    holdings["기준일"] = today
+    holdings.to_csv("data/holdings.csv", index=False, encoding="utf-8-sig")
+    holdings.to_csv(f"data/holdings_{today}.csv", index=False, encoding="utf-8-sig")
     print(f"모집단 {len(uni)}종목")
 
     rows = []
