@@ -40,26 +40,35 @@ def parse_header(soup):
 
 
 def parse_finance(html):
-    """기업실적분석 표 → index=항목, columns=연간 연도(YYYY.12 / YYYY.12(E))"""
+    """기업실적분석 표를 직접 파싱 → DataFrame(index=항목, columns=연간 연도)"""
     soup = BeautifulSoup(html, "lxml")
     tbl = soup.select_one("table.tb_type1_ifrs") or soup.select_one("div.cop_analysis table")
     if tbl is None:
         print(f"  [debug] title={soup.title.get_text(strip=True) if soup.title else None!r} len={len(html)}")
         raise RuntimeError("기업실적분석 표 없음")
-    df = pd.read_html(io.StringIO(str(tbl)))[0]
-    cols = []
-    for c in df.columns:
-        parts = [str(p) for p in (c if isinstance(c, tuple) else (c,))]
-        cols.append(("ANN" if any("연간" in p for p in parts) else
-                     "Q" if any("분기" in p for p in parts) else "ITEM", parts[-1]))
-    df.columns = pd.MultiIndex.from_tuples(cols)
-    item = df.iloc[:, 0]
-    if "ANN" not in df.columns.get_level_values(0):
+    rows = tbl.select("thead tr")
+    if len(rows) < 2:
+        raise RuntimeError("thead 구조 다름")
+    # 1행: 주요재무정보 | 최근 연간 실적(colspan=N) | 최근 분기 실적(colspan=M)
+    n_ann = None
+    for th in rows[0].select("th"):
+        if "연간" in th.get_text():
+            n_ann = int(th.get("colspan", 1))
+            break
+    if n_ann is None:
+        print(f"  [debug] thead0={[th.get_text(strip=True) for th in rows[0].select('th')]}")
         raise RuntimeError("연간 컬럼 없음")
-    ann = df["ANN"].copy()
-    ann.index = [re.sub(r"\s|\(.*?\)", "", str(i)) for i in item]   # ROE(지배주주)→ROE, EPS(원)→EPS
-    ann.columns = [re.sub(r"\s", "", str(c)) for c in ann.columns]
-    return ann, soup
+    years = [re.sub(r"\s", "", th.get_text()) for th in rows[1].select("th")][:n_ann]
+    data = {}
+    for tr in tbl.select("tbody tr"):
+        th = tr.select_one("th")
+        if th is None:
+            continue
+        item = re.sub(r"\s|\(.*?\)", "", th.get_text())          # ROE(지배주주)→ROE
+        vals = [td.get_text(strip=True) for td in tr.select("td")][:n_ann]
+        data[item] = vals + [None] * (n_ann - len(vals))
+    fin = pd.DataFrame.from_dict(data, orient="index", columns=years)
+    return fin, soup
 
 
 def cagr(cur, base, n):
