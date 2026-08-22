@@ -1,14 +1,59 @@
-import glob, os
+import glob, os, html
 import pandas as pd
 import streamlit as st
+from sectors import ORDER
 
-st.set_page_config(page_title="TIME ETF 밸류 스크리너", layout="wide")
-st.title("TIME ETF 국내 보유종목 밸류 스크리너")
+st.set_page_config(page_title="TIME ETF 밸류 스크리너", layout="wide", initial_sidebar_state="collapsed")
+EXPAND, SHRINK = 0.10, -0.10
 
-EXPAND, SHRINK = 0.10, -0.10   # 확대/축소 판정: 수량 ±10%
+# ───────────────────────── 디자인 토큰
+CSS = """
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#0B1220;--card:#121B2F;--line:#1F2B47;--txt:#E6EDF7;--mut:#8A97B0;--acc:#4C8DFF;
+      --up:#2ED47A;--dn:#FF5C6C;--amb:#F5B942;--mono:'JetBrains Mono',ui-monospace,monospace;}
+html,body,[class*="css"]{font-family:Pretendard,-apple-system,sans-serif;}
+.stApp{background:var(--bg);color:var(--txt);}
+.block-container{padding-top:1.2rem;max-width:1500px;}
+h1,h2,h3{letter-spacing:-0.02em}
+.eyebrow{font:600 11px var(--mono);letter-spacing:.18em;color:var(--acc);text-transform:uppercase}
+.title{font-size:26px;font-weight:700;margin:2px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0 14px}
+.kpi .k{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:12px 14px}
+.kpi .k.up{border-left-color:var(--up)} .kpi .k.dn{border-left-color:var(--dn)} .kpi .k.amb{border-left-color:var(--amb)}
+.kpi .l{font-size:11px;color:var(--mut);letter-spacing:.06em} .kpi .v{font:600 24px var(--mono);margin-top:2px}
+.kpi .s{font-size:11px;color:var(--mut);margin-top:2px}
+.bd{display:inline-block;padding:2px 8px;border-radius:6px;font:600 11px var(--mono);letter-spacing:.02em}
+.bd.new{background:var(--up);color:#04130a}.bd.exp{border:1px solid var(--up);color:var(--up)}
+.bd.shr{border:1px solid var(--dn);color:var(--dn)}.bd.out{background:var(--dn);color:#fff}
+.bd.keep{border:1px solid var(--line);color:var(--mut)}.bd.pass{border:1px solid var(--up);color:var(--up)}
+.bd.fail{border:1px solid var(--dn);color:var(--dn)}.bd.hold{border:1px solid var(--amb);color:var(--amb)}
+.bd.sec{background:#1B2A4A;color:#9FC0FF}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{position:sticky;top:0;background:#0F1728;color:var(--mut);font-weight:600;text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);font-size:11.5px;letter-spacing:.04em;white-space:nowrap}
+table.t th.l,table.t td.l{text-align:left}
+table.t td{padding:7px 10px;border-bottom:1px solid #16203A;text-align:right;font-family:var(--mono);white-space:nowrap}
+table.t td.l{font-family:Pretendard;font-weight:600}
+table.t tr:hover td{background:#16213B}
+.pos{color:var(--up)}.neg{color:var(--dn)}.na{color:#4C5875}
+.scroll{max-height:620px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.lead{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin-bottom:14px}
+.lead .c{background:linear-gradient(160deg,#14203A,#0F1728);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.lead .c .s{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.04em}
+.lead .c .n{font-size:15px;font-weight:700;margin:2px 0}
+.lead .c .m{font:12px var(--mono);color:var(--mut)}
+.bar{height:10px;background:#16203A;border-radius:6px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.stTabs [data-baseweb="tab"]{font-weight:600;font-size:14px}
+.note{font-size:12px;color:var(--mut)}
+</style>"""
+st.markdown(CSS, unsafe_allow_html=True)
 
 
-@st.cache_data(ttl=1800)
+# ───────────────────────── 데이터
+@st.cache_data(ttl=300)
 def load():
     res = pd.read_csv("data/result.csv", dtype={"종목코드": str})
     snaps = sorted(glob.glob("data/holdings_*.csv"))
@@ -19,140 +64,213 @@ def load():
 try:
     df, hold = load()
 except FileNotFoundError:
-    st.warning("data/result.csv 없음 — GitHub Actions를 먼저 실행하세요.")
-    st.stop()
+    st.warning("data/result.csv 없음 — GitHub Actions를 먼저 실행하세요."); st.stop()
 
-dates = sorted(hold)
-latest = hold[dates[-1]] if dates else pd.DataFrame()
+for c in ("섹터1", "섹터2"):
+    if c not in df.columns: df[c] = "미분류"
+if "종목명" not in df.columns: df["종목명"] = df["기업"]
+dates = sorted(hold); latest = hold[dates[-1]] if dates else pd.DataFrame()
 prev = hold[dates[-2]] if len(dates) >= 2 else None
 
-st.caption(f"기준일 {df['기준일'].iloc[0]} · 모집단 {len(df)}종목 · 출처: 타임폴리오 구성종목 + 네이버증권 컨센서스 (개인용) · "
-           "fPOR=시총÷영업이익(E), fPER=시총÷순이익(E)")
+
+# ───────────────────────── 밸류점수 (전체 모집단 백분위, 낮을수록 좋은 지표는 반전)
+def value_score(d: pd.DataFrame) -> pd.Series:
+    ok = d["1차결과"].ne("판정보류") & d["fPER"].notna()
+    peg = d["PEG(영익)1y"].fillna(d["PEG(영익)2y"])
+    comp = {
+        "peg": (peg.where(peg > 0), False, .35), "fper": (d["fPER"].where(d["fPER"] > 0), False, .25),
+        "roe": (d["ROE(E)"], True, .20), "opm": (d["영업이익률(E)"], True, .10), "g": (d["매출증가율1y"], True, .10)}
+    score = pd.Series(0.0, index=d.index); wsum = pd.Series(0.0, index=d.index)
+    for s, higher, w in comp.values():
+        r = s[ok].rank(pct=True); r = r if higher else 1 - r
+        score = score.add(r * w, fill_value=0); wsum = wsum.add(s.notna().astype(float) * w, fill_value=0)
+    out = (score / wsum.replace(0, pd.NA) * 100).round(1)
+    return out.where(ok)
 
 
-# ───────── 공통: 변동 상태 계산
-def diff_status(cur: pd.DataFrame, old: pd.DataFrame | None) -> pd.DataFrame:
-    """ETF+종목코드 기준으로 직전 대비 상태/수량증감/비중증감 부여"""
+df["밸류점수"] = value_score(df)
+
+
+# ───────────────────────── 헬퍼
+def badge(x):
+    m = {"신규": "new", "확대": "exp", "축소": "shr", "제외": "out", "유지": "keep", "통과": "pass", "탈락": "fail", "판정보류": "hold"}
+    return f'<span class="bd {m[x]}">{x}</span>' if x in m else html.escape(str(x)) if x == x else ""
+
+
+def num(x, d=2, signed=False, suffix=""):
+    if x is None or x != x: return '<span class="na">—</span>'
+    s = f"{x:+,.{d}f}" if signed else f"{x:,.{d}f}"
+    cls = "pos" if signed and x > 0 else "neg" if signed and x < 0 else ""
+    return f'<span class="{cls}">{s}{suffix}</span>'
+
+
+def table(d: pd.DataFrame, cols, fmt=None, height=620):
+    fmt = fmt or {}
+    th = "".join(f'<th class="{"l" if c in LEFT else ""}">{html.escape(c)}</th>' for c in cols)
+    rows = []
+    for _, r in d.iterrows():
+        tds = []
+        for c in cols:
+            v = r.get(c)
+            if c in fmt: cell = fmt[c](v)
+            elif c in ("상태", "1차결과"): cell = badge(v)
+            elif c in ("섹터1", "섹터2"): cell = f'<span class="bd sec">{html.escape(str(v))}</span>'
+            elif isinstance(v, (int, float)) and not isinstance(v, bool): cell = num(v, 0 if c.startswith("수량") else 2, signed=c.endswith("증감"))
+            else: cell = html.escape("" if v != v or v is None else str(v))
+            tds.append(f'<td class="{"l" if c in LEFT else ""}">{cell}</td>')
+        rows.append("<tr>" + "".join(tds) + "</tr>")
+    st.markdown(f'<div class="scroll" style="max-height:{height}px"><table class="t"><thead><tr>{th}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>', unsafe_allow_html=True)
+
+
+LEFT = {"종목명", "기업", "종목코드", "ETF", "탈락조건", "비고", "섹터1", "섹터2", "보유ETF", "근거"}
+
+
+def kpis(items):
+    h = "".join(f'<div class="k {c}"><div class="l">{l}</div><div class="v">{v}</div><div class="s">{s}</div></div>' for l, v, s, c in items)
+    st.markdown(f'<div class="kpi">{h}</div>', unsafe_allow_html=True)
+
+
+def diff_status(cur, old):
     cur = cur.copy()
     if old is None:
-        cur["상태"] = "—"; cur["수량증감"] = None; cur["비중증감"] = None
+        cur["상태"] = "유지"; cur["수량증감"] = None; cur["비중증감"] = None; cur["수량_전"] = None; cur["비중_전"] = None
         return cur
     key = ["ETF", "종목코드"]
-    m = cur.merge(old[key + ["수량", "비중"]], on=key, how="outer", suffixes=("", "_전"), indicator=True)
+    m = cur.merge(old[key + ["종목명", "수량", "비중"]], on=key, how="outer", suffixes=("", "_전"), indicator=True)
+    m["종목명"] = m["종목명"].fillna(m["종목명_전"])
     m["상태"] = "유지"
-    m.loc[m["_merge"] == "left_only", "상태"] = "신규"
-    m.loc[m["_merge"] == "right_only", "상태"] = "제외"
-    both = m["_merge"] == "both"
-    chg = (m["수량"] - m["수량_전"]) / m["수량_전"].replace(0, pd.NA)
-    m.loc[both & (chg >= EXPAND), "상태"] = "확대"
-    m.loc[both & (chg <= SHRINK), "상태"] = "축소"
-    m["수량증감"] = m["수량"] - m["수량_전"]
-    m["비중증감"] = m["비중"] - m["비중_전"]
-    # 제외 종목은 종목명이 비므로 old에서 보강
-    if "종목명" in old.columns:
-        names = old.set_index(key)["종목명"]
-        m["종목명"] = m["종목명"].fillna(m.set_index(key).index.map(names))
-    return m.drop(columns=["_merge"])
+    m.loc[m["_merge"] == "left_only", "상태"] = "신규"; m.loc[m["_merge"] == "right_only", "상태"] = "제외"
+    both = m["_merge"] == "both"; chg = (m["수량"] - m["수량_전"]) / m["수량_전"].replace(0, pd.NA)
+    m.loc[both & (chg >= EXPAND), "상태"] = "확대"; m.loc[both & (chg <= SHRINK), "상태"] = "축소"
+    m["수량증감"] = m["수량"] - m["수량_전"]; m["비중증감"] = m["비중"] - m["비중_전"]
+    return m.drop(columns=["_merge", "종목명_전"])
 
 
-def style_status(x):
-    return {"신규": "background:#1a7f37;color:white;font-weight:600",
-            "확대": "color:#1a7f37;font-weight:600",
-            "축소": "color:#b3261e;font-weight:600",
-            "제외": "background:#b3261e;color:white;font-weight:600",
-            "통과": "color:#1a7f37;font-weight:600", "탈락": "color:#b3261e",
-            "판정보류": "color:#9a6700"}.get(x, "")
+VAL = ["fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "PEG(영익)3y", "영업이익률(E)", "ROE(E)", "밸류점수", "1차결과", "탈락조건"]
+VAL = [c for c in VAL if c in df.columns]
 
+# ───────────────────────── 헤더
+st.markdown('<div class="eyebrow">TIME ETF · 국내 8종 · 보유종목 밸류 모니터</div><div class="title">타임폴리오 보유종목 밸류 스크리너</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="note">기준일 {df["기준일"].iloc[0]} · 모집단 {len(df)}종목 · 타임폴리오 구성종목 + 네이버증권 컨센서스 · fPOR=시총÷영업이익(E) · fPER=시총÷순이익(E) · 개인용</div>', unsafe_allow_html=True)
 
-def fmt_table(v, cols):
-    show = v[cols].copy()
-    for c in cols:
-        if show[c].dtype.kind in "fi":
-            show[c] = show[c].map(lambda x: "산출불가" if pd.isna(x) else (f"{x:,.0f}" if c.startswith("수량") else f"{x:,.2f}"))
-        else:
-            show[c] = show[c].fillna("")
-    sub = [c for c in ("상태", "1차결과") if c in cols]
-    return show.style.map(style_status, subset=sub)
+T = st.tabs(["밸류 스크리닝", "섹터 베스트", "포트폴리오 제안", "ETF별 보유현황", "일일 변동"])
 
-
-VAL_COLS = ["fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "PEG(영익)3y",
-            "영업이익률(E)", "ROE(E)", "1차결과", "탈락조건", "비고"]
-VAL_COLS = [c for c in VAL_COLS if c in df.columns]
-
-tab1, tab2, tab3 = st.tabs(["📊 밸류 스크리닝", "📁 ETF별 보유현황", "🔄 일일 변동"])
-
-# ───────── 탭1: 기존 스크리닝
-with tab1:
-    c = st.columns([2, 1, 1])
+# ═════════ 1. 스크리닝
+with T[0]:
+    c = st.columns([2, 2, 1, 1])
     etfs = sorted({e for s in df["보유ETF"].dropna() for e in s.split(",")})
     sel = c[0].multiselect("ETF", etfs, default=etfs)
-    only_pass = c[1].checkbox("1차 통과만")
-    min_etf = c[2].slider("최소 보유 ETF 수", 1, int(df["보유ETF수"].max()), 1)
-    m = df["보유ETF"].fillna("").apply(lambda s: any(e in s.split(",") for e in sel)) & (df["보유ETF수"] >= min_etf)
-    if only_pass:
-        m &= df["1차결과"].eq("통과")
-    v = df[m]
-    st.subheader(f"스크리닝 표 ({len(v)}종목)")
-    st.dataframe(fmt_table(v, ["기업", "보유ETF수", "최대비중"] + VAL_COLS), use_container_width=True, height=560, hide_index=True)
-    k = st.columns(4)
-    k[0].metric("1차 통과", int(v["1차결과"].eq("통과").sum()))
-    k[1].metric("PEG(영익)1y<0.5", int((v["PEG(영익)1y"] < 0.5).sum()))
-    k[2].metric("판정보류", int(v["1차결과"].eq("판정보류").sum()))
-    k[3].metric("컨센서스 없음", int(v["비고"].fillna("").str.contains("산출불가|실패").sum()))
-    with st.expander("1차 필터 기준"):
-        st.markdown("""
-국내 4조건 중 **2개 이상** 해당 시 탈락 (ROIC vs WACC는 미국주식 전용)
-1. PEG(영익) 3y→2y→1y 순으로 악화  2. PEG(영익)1y ≥ 1.0  3. ROE(E) < 15%
-4. 기저효과(전년 영익 ≤0 또는 영업이익률 <3%)로 PEG 왜곡, 장기 PEG로도 보완 안 됨
-
-**판정보류**: fPER 또는 PEG(영익) 전부 산출불가 (금융주는 매출·영업이익 행이 없어 해당)
-""")
+    secs = c[1].multiselect("섹터", [s for s in ORDER if s in set(df["섹터1"])], default=[])
+    only_pass = c[2].checkbox("1차 통과만"); sort = c[3].selectbox("정렬", ["밸류점수", "PEG(영익)1y", "fPER", "ROE(E)", "최대비중"])
+    m = df["보유ETF"].fillna("").apply(lambda s: any(e in s.split(",") for e in sel))
+    if secs: m &= df["섹터1"].isin(secs)
+    if only_pass: m &= df["1차결과"].eq("통과")
+    v = df[m].sort_values(sort, ascending=sort in ("PEG(영익)1y", "fPER"), na_position="last")
+    kpis([("종목", len(v), "필터 적용", ""), ("1차 통과", int(v["1차결과"].eq("통과").sum()), "4조건 중 1개 이하", "up"),
+          ("PEG(영익)1y < 0.5", int((v["PEG(영익)1y"] < 0.5).sum()), "성장 대비 저평가", "up"),
+          ("판정보류", int(v["1차결과"].eq("판정보류").sum()), "금융주 등 지표 부적합", "amb"),
+          ("컨센서스 없음", int(v["비고"].fillna("").str.contains("산출불가|실패").sum()), "추정치 미제공", "dn")])
+    table(v, ["종목명", "섹터1", "섹터2", "보유ETF수", "최대비중"] + VAL)
+    with st.expander("1차 필터 · 밸류점수 기준"):
+        st.markdown("""**1차 필터** 국내 4조건 중 2개 이상 → 탈락: ① PEG(영익) 3y→2y→1y 악화 ② PEG(영익)1y ≥ 1.0 ③ ROE(E) < 15% ④ 기저효과(전년 영익 ≤0 또는 이익률 <3%)로 PEG 왜곡, 장기 PEG로도 미보완.
+**판정보류** fPER 또는 PEG(영익) 전부 산출불가 (금융주 대부분).
+**밸류점수(0~100)** 모집단 내 백분위 가중합 — PEG(영익) 35% · fPER 25% · ROE 20% · 영업이익률 10% · 매출성장 10%. 높을수록 성장 대비 저평가.""")
     st.download_button("CSV 다운로드", v.to_csv(index=False).encode("utf-8-sig"), "screen.csv")
 
-# ───────── 탭2: ETF별
-with tab2:
-    if latest.empty:
-        st.info("보유 스냅샷 없음 — 다음 수집부터 표시됩니다.")
-    else:
-        etf_list = sorted(latest["ETF"].unique())
-        pick = st.radio("ETF", etf_list, horizontal=True, label_visibility="collapsed")
-        cur = latest[latest["ETF"] == pick]
-        old = prev[prev["ETF"] == pick] if prev is not None else None
-        d = diff_status(cur, old)
-        d = d.merge(df.drop(columns=["보유ETF", "보유ETF수", "최대비중", "기준일"], errors="ignore"), on="종목코드", how="left")
-        d = d.sort_values("비중", ascending=False)
-        head = st.columns(5)
-        head[0].metric("보유종목", int((d["상태"] != "제외").sum()))
-        for i, s_ in enumerate(["신규", "확대", "축소", "제외"], 1):
-            head[i].metric(s_, int((d["상태"] == s_).sum()))
-        st.caption(f"비교: {dates[-2] if prev is not None else '없음'} → {dates[-1]} · 확대/축소 = 수량 ±10%")
-        cols = ["상태", "종목명", "종목코드", "수량", "수량증감", "비중", "비중증감"] + VAL_COLS
-        st.dataframe(fmt_table(d, cols), use_container_width=True, height=620, hide_index=True)
+# ═════════ 2. 섹터 베스트
+with T[1]:
+    elig = df[df["밸류점수"].notna()]
+    leaders = elig.sort_values("밸류점수", ascending=False).groupby("섹터1").head(1)
+    leaders["o"] = leaders["섹터1"].map({s: i for i, s in enumerate(ORDER)}); leaders = leaders.sort_values("o")
+    cards = "".join(f'<div class="c"><div class="s">{html.escape(r["섹터1"])}</div><div class="n">{html.escape(r["종목명"])}</div>'
+                    f'<div class="m">점수 {r["밸류점수"]:.0f} · PEG {r["PEG(영익)1y"]:.2f} · fPER {r["fPER"]:.1f}</div></div>'
+                    if r["PEG(영익)1y"] == r["PEG(영익)1y"] else
+                    f'<div class="c"><div class="s">{html.escape(r["섹터1"])}</div><div class="n">{html.escape(r["종목명"])}</div><div class="m">점수 {r["밸류점수"]:.0f} · fPER {r["fPER"]:.1f}</div></div>'
+                    for _, r in leaders.iterrows())
+    st.markdown(f'<div class="note" style="margin-bottom:6px">섹터별 밸류점수 1위</div><div class="lead">{cards}</div>', unsafe_allow_html=True)
+    pick = st.radio("섹터", [s for s in ORDER if s in set(df["섹터1"])], horizontal=True, label_visibility="collapsed")
+    sd = df[df["섹터1"] == pick].sort_values("밸류점수", ascending=False, na_position="last")
+    topn = st.slider("세부섹터별 상위", 1, 5, 3)
+    best = sd[sd["밸류점수"].notna()].groupby("섹터2").head(topn)
+    kpis([("섹터 종목", len(sd), pick, ""), ("평가 가능", int(sd["밸류점수"].notna().sum()), "판정보류·미산출 제외", "up"),
+          ("섹터 중앙 fPER", f'{sd["fPER"].median():.1f}' if sd["fPER"].notna().any() else "—", "동일섹터 비교 기준", "amb"),
+          ("섹터 중앙 PEG", f'{sd["PEG(영익)1y"].median():.2f}' if sd["PEG(영익)1y"].notna().any() else "—", "영익 1y", "amb")])
+    st.markdown(f'<div class="note">세부섹터별 상위 {topn}개 · 밸류점수 순</div>', unsafe_allow_html=True)
+    table(best, ["섹터2", "종목명", "보유ETF수", "최대비중", "밸류점수", "fPOR", "fPER", "PEG(영익)1y", "PEG(영익)2y", "영업이익률(E)", "ROE(E)", "매출증가율1y", "1차결과"], height=480)
+    with st.expander(f"{pick} 전체 보기"):
+        table(sd, ["섹터2", "종목명", "보유ETF수"] + VAL, height=500)
 
-# ───────── 탭3: 전 ETF 일일 변동
-with tab3:
-    if prev is None:
-        st.info("비교할 직전 스냅샷이 없음 — 다음 수집일부터 변동이 표시됩니다.")
+# ═════════ 3. 포트폴리오 제안
+with T[2]:
+    c = st.columns(4)
+    n = c[0].slider("종목 수", 5, 15, 10); per_sec = c[1].slider("섹터당 최대 종목", 1, 3, 2)
+    cap = c[2].slider("섹터 비중 상한(%)", 15, 40, 25); style = c[3].selectbox("성향", ["균형", "성장(PEG 중심)", "퀄리티(ROE 중심)"])
+    cand = df[(df["1차결과"] == "통과") & df["밸류점수"].notna()].copy()
+    if style == "성장(PEG 중심)": cand["정렬"] = cand["밸류점수"] - cand["PEG(영익)1y"].fillna(cand["PEG(영익)2y"]).fillna(1) * 20
+    elif style == "퀄리티(ROE 중심)": cand["정렬"] = cand["밸류점수"] + cand["ROE(E)"].fillna(0) * 0.5
+    else: cand["정렬"] = cand["밸류점수"] + cand["보유ETF수"] * 3       # ETF 다수 보유 = 운용사 확신 가점
+    cand = cand.sort_values("정렬", ascending=False)
+    picks, cnt = [], {}
+    for _, r in cand.iterrows():
+        if cnt.get(r["섹터1"], 0) >= per_sec: continue
+        picks.append(r); cnt[r["섹터1"]] = cnt.get(r["섹터1"], 0) + 1
+        if len(picks) >= n: break
+    P = pd.DataFrame(picks)
+    if P.empty:
+        st.info("조건을 만족하는 종목이 없음 — 수집 후 다시 확인")
     else:
-        allc = diff_status(latest, prev)
-        chg = allc[allc["상태"].isin(["신규", "확대", "축소", "제외"])].copy()
-        st.caption(f"{dates[-2]} → {dates[-1]} · 전 ETF 교차")
+        w = P["정렬"].clip(lower=1); w = w / w.sum()
+        for _ in range(10):                                              # 섹터 상한 적용
+            sw = w.groupby(P["섹터1"]).transform("sum"); over = sw > cap / 100
+            if not over.any(): break
+            w[over] *= (cap / 100) / sw[over]; w[~over] *= (1 - w[over].sum()) / w[~over].sum()
+        P["비중(%)"] = (w * 100).round(1)
+        P["근거"] = P.apply(lambda r: " · ".join(x for x in [
+            f'PEG {r["PEG(영익)1y"]:.2f}' if r["PEG(영익)1y"] == r["PEG(영익)1y"] else None,
+            f'fPER {r["fPER"]:.1f}', f'ROE {r["ROE(E)"]:.0f}%' if r["ROE(E)"] == r["ROE(E)"] else None,
+            f'{int(r["보유ETF수"])}개 ETF 보유'] if x), axis=1)
+        alloc = P.groupby("섹터1")["비중(%)"].sum().sort_values(ascending=False)
+        pal = ["#4C8DFF", "#2ED47A", "#F5B942", "#FF5C6C", "#9B7BFF", "#2FC6D6", "#FF9F5A", "#7DD3FC", "#C084FC", "#A3E635"]
+        bar = "".join(f'<i style="width:{v}%;background:{pal[i % len(pal)]}" title="{k} {v:.0f}%"></i>' for i, (k, v) in enumerate(alloc.items()))
+        leg = " &nbsp; ".join(f'<span style="color:{pal[i % len(pal)]}">■</span> {k} {v:.0f}%' for i, (k, v) in enumerate(alloc.items()))
+        kpis([("종목", len(P), f"{style}", ""), ("섹터 수", len(alloc), f"상한 {cap}%", "up"),
+              ("가중 fPER", f'{(P["fPER"] * w).sum():.1f}', "비중가중", "amb"),
+              ("가중 ROE", f'{(P["ROE(E)"].fillna(0) * w).sum():.0f}%', "비중가중", "amb")])
+        st.markdown(f'<div class="card"><div class="note" style="margin-bottom:6px">섹터 배분</div><div class="bar">{bar}</div><div class="note" style="margin-top:8px">{leg}</div></div>', unsafe_allow_html=True)
+        table(P, ["종목명", "섹터1", "섹터2", "비중(%)", "밸류점수", "fPER", "PEG(영익)1y", "ROE(E)", "보유ETF수", "근거"], height=520)
+        st.markdown('<div class="note">규칙 기반 자동 구성(1차 통과 + 밸류점수 + 섹터 분산)이며 투자 권유가 아님. 2차 섹터밴드·Type 판정은 별도 수기 검토 필요.</div>', unsafe_allow_html=True)
+
+# ═════════ 4. ETF별
+with T[3]:
+    if latest.empty: st.info("보유 스냅샷 없음 — 다음 수집부터 표시됩니다.")
+    else:
+        pick = st.radio("ETF", sorted(latest["ETF"].unique()), horizontal=True, label_visibility="collapsed")
+        d = diff_status(latest[latest["ETF"] == pick], prev[prev["ETF"] == pick] if prev is not None else None)
+        d = d.merge(df.drop(columns=["보유ETF", "보유ETF수", "최대비중", "기준일", "종목명"], errors="ignore"), on="종목코드", how="left").sort_values("비중", ascending=False)
+        kpis([("보유종목", int((d["상태"] != "제외").sum()), f'{dates[-2] if prev is not None else "—"} → {dates[-1]}', ""),
+              ("신규", int((d["상태"] == "신규").sum()), "편입", "up"), ("확대", int((d["상태"] == "확대").sum()), "수량 +10%↑", "up"),
+              ("축소", int((d["상태"] == "축소").sum()), "수량 −10%↓", "dn"), ("제외", int((d["상태"] == "제외").sum()), "전량 매도", "dn")])
+        table(d, ["상태", "종목명", "섹터1", "수량", "수량증감", "비중", "비중증감", "밸류점수", "fPOR", "fPER", "PEG(영익)1y", "ROE(E)", "1차결과"])
+
+# ═════════ 5. 일일 변동
+with T[4]:
+    if prev is None: st.info("직전 스냅샷이 없음 — 다음 수집일부터 신규·확대·축소·제외가 표시됩니다.")
+    else:
+        allc = diff_status(latest, prev); chg = allc[allc["상태"].isin(["신규", "확대", "축소", "제외"])].copy()
+        chg = chg.merge(df[["종목코드", "섹터1"]], on="종목코드", how="left")
+        buy = chg[chg["상태"].isin(["신규", "확대"])].groupby("종목명")["ETF"].agg(lambda s: ", ".join(sorted(s)))
+        sell = chg[chg["상태"].isin(["축소", "제외"])].groupby("종목명")["ETF"].agg(lambda s: ", ".join(sorted(s)))
+        st.markdown(f'<div class="note">{dates[-2]} → {dates[-1]} · 전 ETF 교차 · 수량 기준</div>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
-        buy = chg[chg["상태"].isin(["신규", "확대"])].groupby(["종목코드", "종목명"])["ETF"].agg(lambda s: ", ".join(sorted(s))).reset_index()
-        sell = chg[chg["상태"].isin(["축소", "제외"])].groupby(["종목코드", "종목명"])["ETF"].agg(lambda s: ", ".join(sorted(s))).reset_index()
-        c1.markdown(f"**🟢 매수 방향 (신규·확대) {len(buy)}종목**"); c1.dataframe(buy, hide_index=True, use_container_width=True)
-        c2.markdown(f"**🔴 매도 방향 (축소·제외) {len(sell)}종목**"); c2.dataframe(sell, hide_index=True, use_container_width=True)
-        st.subheader("변경 상세")
-        cols = ["상태", "ETF", "종목명", "종목코드", "수량_전", "수량", "수량증감", "비중_전", "비중", "비중증감"]
-        st.dataframe(fmt_table(chg.sort_values(["상태", "ETF"]), cols), use_container_width=True, height=500, hide_index=True)
-
-    # 종목별 ETF 비중 피벗
+        c1.markdown(f'<div class="card" style="border-left:4px solid var(--up)"><b>매수 방향 (신규·확대)</b> <span class="note">{len(buy)}종목</span><br>' +
+                    "<br>".join(f'<b>{html.escape(k)}</b> <span class="note">{html.escape(v)}</span>' for k, v in buy.items()) + "</div>", unsafe_allow_html=True)
+        c2.markdown(f'<div class="card" style="border-left:4px solid var(--dn)"><b>매도 방향 (축소·제외)</b> <span class="note">{len(sell)}종목</span><br>' +
+                    "<br>".join(f'<b>{html.escape(k)}</b> <span class="note">{html.escape(v)}</span>' for k, v in sell.items()) + "</div>", unsafe_allow_html=True)
+        table(chg.sort_values(["상태", "ETF"]), ["상태", "ETF", "종목명", "섹터1", "수량_전", "수량", "수량증감", "비중_전", "비중", "비중증감"], height=500)
     if not latest.empty:
-        st.subheader("종목 × ETF 보유비중(%)")
+        st.markdown('<div class="note" style="margin-top:14px">종목 × ETF 보유비중(%)</div>', unsafe_allow_html=True)
         pv = latest.pivot_table(index=["종목코드", "종목명"], columns="ETF", values="비중", aggfunc="first")
-        pv["보유ETF수"] = pv.notna().sum(axis=1)
-        pv = pv.sort_values("보유ETF수", ascending=False).reset_index()
-        q = st.text_input("종목 검색", "")
-        if q:
-            pv = pv[pv["종목명"].str.contains(q, case=False, na=False) | pv["종목코드"].str.contains(q)]
-        st.dataframe(pv.style.format(precision=2, na_rep=""), use_container_width=True, height=500, hide_index=True)
+        pv["보유ETF수"] = pv.notna().sum(axis=1); pv = pv.sort_values("보유ETF수", ascending=False).reset_index()
+        q = st.text_input("종목 검색", "", placeholder="종목명 또는 코드")
+        if q: pv = pv[pv["종목명"].str.contains(q, case=False, na=False) | pv["종목코드"].str.contains(q)]
+        table(pv, list(pv.columns), height=500)
