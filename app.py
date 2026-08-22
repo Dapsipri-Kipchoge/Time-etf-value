@@ -68,8 +68,10 @@ except FileNotFoundError:
 
 for c in ("섹터1", "섹터2"):
     if c not in df.columns: df[c] = "미분류"
-for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", None)):
+for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", float("nan"))):
     if c not in df.columns: df[c] = dflt
+for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "매출증가율1y", "밸류점수" if "밸류점수" in df.columns else "fPER"):
+    df[c] = pd.to_numeric(df[c], errors="coerce")
 if "종목명" not in df.columns: df["종목명"] = df["기업"]
 dates = sorted(hold); latest = hold[dates[-1]] if dates else pd.DataFrame()
 prev = hold[dates[-2]] if len(dates) >= 2 else None
@@ -183,11 +185,12 @@ with T[1]:
     elig = df[df["밸류점수"].notna()].copy(); elig["티어"] = (elig["Type"] == "통과").astype(int)
     leaders = elig.sort_values(["티어", "밸류점수"], ascending=False).groupby("섹터1").head(1)
     leaders["o"] = leaders["섹터1"].map({s: i for i, s in enumerate(ORDER)}); leaders = leaders.sort_values("o")
-    cards = "".join(f'<div class="c"><div class="s">{html.escape(r["섹터1"])}</div><div class="n">{html.escape(r["종목명"])}</div>'
-                    f'<div class="m">Type {r["Type"]} · PEG {r["유효PEG"]:.2f} · fPER {r["fPER"]:.1f}</div></div>'
-                    if r["유효PEG"] == r["유효PEG"] else
-                    f'<div class="c"><div class="s">{html.escape(r["섹터1"])}</div><div class="n">{html.escape(r["종목명"])}</div><div class="m">Type {r["Type"]} · fPER {r["fPER"]:.1f}</div></div>'
-                    for _, r in leaders.iterrows())
+    def _card(r):
+        m = [f'Type {r["Type"]}']
+        if pd.notna(r.get("유효PEG")): m.append(f'PEG {r["유효PEG"]:.2f}')
+        if pd.notna(r.get("fPER")): m.append(f'fPER {r["fPER"]:.1f}')
+        return f'<div class="c"><div class="s">{html.escape(str(r["섹터1"]))}</div><div class="n">{html.escape(str(r["종목명"]))}</div><div class="m">{" · ".join(m)}</div></div>'
+    cards = "".join(_card(r) for _, r in leaders.iterrows())
     st.markdown(f'<div class="note" style="margin-bottom:6px">섹터별 밸류점수 1위</div><div class="lead">{cards}</div>', unsafe_allow_html=True)
     pick = st.radio("섹터", [s for s in ORDER if s in set(df["섹터1"])], horizontal=True, label_visibility="collapsed")
     sd = df[df["섹터1"] == pick].sort_values("밸류점수", ascending=False, na_position="last")
@@ -228,8 +231,8 @@ with T[2]:
             w[over] *= (cap / 100) / sw[over]; w[~over] *= (1 - w[over].sum()) / w[~over].sum()
         P["비중(%)"] = (w * 100).round(1)
         P["근거"] = P.apply(lambda r: " · ".join(x for x in [
-            f'PEG {r["유효PEG"]:.2f}' if r["유효PEG"] == r["유효PEG"] else None,
-            f'fPER {r["fPER"]:.1f}', f'ROE {r["ROE(E)"]:.0f}%' if r["ROE(E)"] == r["ROE(E)"] else None,
+            f'PEG {r["유효PEG"]:.2f}' if pd.notna(r["유효PEG"]) else None,
+            f'fPER {r["fPER"]:.1f}' if pd.notna(r["fPER"]) else None, f'ROE {r["ROE(E)"]:.0f}%' if pd.notna(r["ROE(E)"]) else None,
             f'{int(r["보유ETF수"])}개 ETF 보유'] if x), axis=1)
         alloc = P.groupby("섹터1")["비중(%)"].sum().sort_values(ascending=False)
         pal = ["#4C8DFF", "#2ED47A", "#F5B942", "#FF5C6C", "#9B7BFF", "#2FC6D6", "#FF9F5A", "#7DD3FC", "#C084FC", "#A3E635"]
