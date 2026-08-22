@@ -234,7 +234,7 @@ with T[0]:
           ("탈락", int(T_["Type"].eq("탈락").sum()), "1개 이상 미달", "dn"),
           ("금융", int(T_["Type"].eq("금융").sum()), "기준 미적용 · 별도 판단", "amb"),
           ("보류", int(T_["Type"].eq("보류").sum()), "컨센서스 없음", "")])
-    table(v, ["종목명", "섹터1", "섹터2", "보유ETF수", "최대비중"] + VAL)
+    table(v, ["종목명", "섹터1", "보유ETF수", "최대비중"] + VAL)
     st.download_button("CSV 다운로드", v.to_csv(index=False).encode("utf-8-sig"), "screen.csv")
 
 # ═════════ 2. 포트폴리오 제안
@@ -291,7 +291,7 @@ with T[1]:
               ("가중 fPER", f'{(P["fPER"] * w).sum():.1f}', "비중가중", "amb"),
               ("가중 ROE", f'{(P["ROE(E)"].fillna(0) * w).sum():.0f}%', "비중가중", "amb")])
         st.markdown(f'<div class="card"><div class="note" style="margin-bottom:6px">섹터 배분</div><div class="bar">{bar}</div><div class="note" style="margin-top:8px">{leg}</div></div>', unsafe_allow_html=True)
-        table(P, ["Type", "종목명", "섹터1", "섹터2", "비중(%)", "밸류점수", "fPER", "유효PEG", "ROE(E)", "시총(억)", "보유ETF수", "플래그", "근거", "섹터 대안"], height=520)
+        table(P, ["Type", "종목명", "섹터1", "비중(%)", "밸류점수", "fPER", "유효PEG", "ROE(E)", "시총(억)", "보유ETF수", "플래그", "근거", "섹터 대안"], height=520)
         bc = st.columns(min(len(P), 5))
         for i, (_, r) in enumerate(P.iterrows()):
             if bc[i % len(bc)].button(f"✕ {r['종목명']}", key=f"ex_{r['종목코드']}", help=f"{r['섹터1']} · 대안: {r['섹터 대안']}"):
@@ -346,7 +346,7 @@ with T[4]:
         st.markdown('<div class="note">타임폴리오 모집단과 별개로 수기 관리하는 관심종목 · 같은 6개 기준으로 판정 · 매일 함께 수집</div>', unsafe_allow_html=True)
         kpis([("종목", len(W), "워치리스트", ""), ("통과", int(W["Type"].eq("통과").sum()), "6개 기준 전부", "up"),
               ("탈락", int(W["Type"].eq("탈락").sum()), "", "dn")])
-        table(W, ["종목명", "섹터1", "섹터2", "Type", "현재가", "시총(억)", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "유효PEG",
+        table(W, ["종목명", "섹터1", "Type", "현재가", "시총(억)", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "유효PEG",
                   "영업이익률(E)", "전년영업이익률", "ROE(E)", "매출증가율1y", "탈락조건", "플래그", "메모"], height=300)
     except FileNotFoundError:
         st.info("data/watchlist.csv 없음 — 다음 수집부터 표시됩니다.")
