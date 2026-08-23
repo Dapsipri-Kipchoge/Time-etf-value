@@ -73,6 +73,8 @@ def fetch_forecast(t):
     if m and d.get("eps2") is None: d["eps2"] = to_num(m.group(1))
     m = re.search(r"average price target of \$([\d,]+(?:\.\d+)?)", txt)
     d["목표주가"] = to_num(m.group(1)) if m else None
+    m = re.search(r"Financial currency is ([A-Z]{3})", txt)
+    d["통화"] = m.group(1) if m else "USD"
     return d
 
 
@@ -87,7 +89,12 @@ def fetch_stats(t):
     price = None
     mp = re.search(r"([\d,]+\.\d{2})\s+[-+][\d.]+\s+\([-+][\d.]+%\)", txt)
     if mp: price = to_num(mp.group(1))
-    return {"기업": name, "현재가": price,
+    m = re.search(r"revenue of \$([\d.,]+)\s*(trillion|billion|million)", txt)
+    ttm_usd = to_num(m.group(1) + {"trillion": "T", "billion": "B", "million": "M"}[m.group(2)]) if m else None
+    shares = grab("Shares Outstanding")
+    if price is None and shares and grab("Market Cap"):
+        price = round(grab("Market Cap") / shares, 2)
+    return {"기업": name, "현재가": price, "주식수(M)": shares, "TTM매출($M)": ttm_usd,
             "시총($M)": grab("Market Cap"), "ROE(E)": grab("Return on Equity (ROE)"),
             "ROIC": grab("Return on Invested Capital (ROIC)"), "WACC": grab("Weighted Average Cost of Capital (WACC)"),
             "배당수익률": grab("Dividend Yield"), "부채자본비율": grab("Debt / Equity"), "fPER(사이트)": grab("Forward PE"),
@@ -104,6 +111,17 @@ def fetch_industry(t):
         return ""
 
 
+def implied_fx(t, ttm_usd):
+    """/revenue/ 페이지 TTM(현지통화) ÷ statistics TTM(USD) = 환율"""
+    try:
+        txt = BeautifulSoup(_get(BASE.format(t=t, page="revenue")), "lxml").get_text(" ")
+        m = re.search(r"last twelve months to ([\d.,]+[TBMK]?)", txt)
+        loc = to_num(m.group(1)) if m else None
+        return loc / ttm_usd if loc and ttm_usd else None
+    except Exception:
+        return None
+
+
 def cagr(cur, base, n):
     if cur is None or base is None or base <= 0 or cur <= 0: return None
     return ((cur / base) ** (1 / n) - 1) * 100
@@ -113,9 +131,21 @@ def compute_us(ticker: str) -> dict:
     f = fetch_forecast(ticker); time.sleep(1.0)
     s = fetch_stats(ticker)
     mcap = s["시총($M)"]
+    fx = 1.0
+    if f.get("통화", "USD") != "USD":
+        time.sleep(1.0); fx = implied_fx(ticker, s.get("TTM매출($M)"))
+        if not fx: raise RuntimeError(f"{f['통화']} 환율 산출 실패")
+        for k in list(f):
+            if k[:3] in ("rev", "op0", "op1", "op2", "op_", "ni0", "ni1", "ni2") and isinstance(f[k], (int, float)):
+                f[k] = f[k] / fx
     rev0, rev1, rev2, op0, op1, ni1 = f["rev0"], f["rev1"], f["rev2"], f["op0"], f["op1"], f["ni1"]
     fpor = mcap / op1 if mcap and op1 and op1 > 0 else None
-    fper = mcap / ni1 if mcap and ni1 and ni1 > 0 else None
+    eps1 = f.get("eps1"); price = s.get("현재가")
+    if f.get("통화", "USD") != "USD" and eps1:                      # ADR: 표의 EPS가 현지통화 기준이면 환산
+        eps1 = eps1 / fx if (price and eps1 / price > 1.0) else eps1  # EPS가 주가보다 크면 현지통화로 판단
+    fper = price / eps1 if price and eps1 and eps1 > 0 else None    # non-GAAP 조정 EPS 기준 (사이트 Forward PE와 동일 정의)
+    if fper is None and s.get("fPER(사이트)"): fper = s["fPER(사이트)"]
+    ni1_adj = mcap / fper if mcap and fper else None
     g_rev1, g_op1 = cagr(rev1, rev0, 1), cagr(op1, op0, 1)
     g_rev2 = cagr(rev2, rev0, 2)
     g_eps2 = cagr(f["eps2"], f["eps0"], 2) if f.get("eps2") and f.get("eps0") else None   # 영익 FY2 미제공 → EPS 2y CAGR 대용
@@ -124,11 +154,12 @@ def compute_us(ticker: str) -> dict:
     base = op0 is None or op0 <= 0 or (opm0 is not None and opm0 < 3)
     def peg(g): return None if fper is None or g is None or g <= 0 else fper / g
     d = {"종목코드": ticker, **s, "추정연도": f["FY1"], "전년도": f["FY0"],
-         "매출(E)": rev1, "영업이익(E)": op1, "순이익(E)": ni1,
+         "매출(E)": rev1, "영업이익(E)": op1, "순이익(E)": ni1, "순이익(E,조정)": ni1_adj, "EPS(E)": eps1,
          "fPOR": fpor, "fPER": fper,
          "PEG(매출)1y": peg(g_rev1), "PEG(영익)1y": None if base else peg(g_op1),
          "PEG(매출)2y": peg(g_rev2), "PEG(영익)2y": peg(g_eps2), "PEG(영익)3y": None,
          "영업이익률(E)": opm1, "전년영업이익률": opm0,
          "매출증가율1y": g_rev1, "영익증가율1y": g_op1, "목표주가": f["목표주가"],
+         "통화": f.get("통화", "USD"), "환율": round(fx, 3) if fx != 1.0 else None,
          "비고": "기저효과→PEG(영익)1y 산출불가" if base else ""}
     return d
