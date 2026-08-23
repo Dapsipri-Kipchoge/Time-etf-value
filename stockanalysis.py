@@ -1,5 +1,9 @@
 """StockAnalysis.com 파서 (Forecast + Statistics + Company) → 국장과 동일한 지표 dict
 단위: 매출·이익 $M, 시총 $M. 회계연도: FY0 = 최근 확정, FY1 = 당해 추정(E), FY2 = 차기 추정(E)
+
+변경점
+- 기저효과 판정에 "FY-1 영업적자 / FY0·FY-1 순손실" 추가 (흑자 전환 직후 종목 포착)
+- 기저효과 종목용 포워드 PEG 추가: fPER ÷ (FY1→FY2 성장률). 영업이익 FY2 있으면 그걸로, 없으면 EPS로
 """
 import re, time
 import requests
@@ -65,6 +69,7 @@ def fetch_forecast(t):
     for k, name in (("rev", "Revenue"), ("op", "Operating Income"), ("ni", "Net Income"), ("eps", "EPS"), ("fpe_site", "Forward PE")):
         d[f"{k}0"] = col(name, i0); d[f"{k}1"] = col(name, i1); d[f"{k}2"] = col(name, i1 + 1)
     d["rev_1"] = col("Revenue", i0 - 1); d["op_1"] = col("Operating Income", i0 - 1)
+    d["ni_1"] = col("Net Income", i0 - 1)                         # FY-1 순이익 (기저효과 판정용)
     # 요약 카드: Revenue Next Year / EPS Next Year (FY2) — 표가 Pro 잠김일 때 보완
     txt = soup.get_text(" ")
     m = re.search(r"Revenue Next Year\s*([\d.]+[TBMK]?)", txt)
@@ -136,30 +141,48 @@ def compute_us(ticker: str) -> dict:
         time.sleep(1.0); fx = implied_fx(ticker, s.get("TTM매출($M)"))
         if not fx: raise RuntimeError(f"{f['통화']} 환율 산출 실패")
         for k in list(f):
-            if k[:3] in ("rev", "op0", "op1", "op2", "op_", "ni0", "ni1", "ni2") and isinstance(f[k], (int, float)):
+            if k[:3] in ("rev", "op0", "op1", "op2", "op_", "ni0", "ni1", "ni2", "ni_") and isinstance(f[k], (int, float)):
                 f[k] = f[k] / fx
-    rev0, rev1, rev2, op0, op1, ni1 = f["rev0"], f["rev1"], f["rev2"], f["op0"], f["op1"], f["ni1"]
+    rev0, rev1, rev2, op0, op1, op2, ni1 = f["rev0"], f["rev1"], f["rev2"], f["op0"], f["op1"], f.get("op2"), f["ni1"]
+    op_1, ni0, ni_1 = f.get("op_1"), f.get("ni0"), f.get("ni_1")
     fpor = mcap / op1 if mcap and op1 and op1 > 0 else None
-    eps1 = f.get("eps1"); price = s.get("현재가")
+    eps1, eps2 = f.get("eps1"), f.get("eps2"); price = s.get("현재가")
     if f.get("통화", "USD") != "USD" and eps1:                      # ADR: 표의 EPS가 현지통화 기준이면 환산
-        eps1 = eps1 / fx if (price and eps1 / price > 1.0) else eps1  # EPS가 주가보다 크면 현지통화로 판단
+        if price and eps1 / price > 1.0:                             # EPS가 주가보다 크면 현지통화로 판단
+            eps1 = eps1 / fx
+            if eps2: eps2 = eps2 / fx                                 # eps2도 같은 기준으로 (비율 계산엔 무관하지만 일관성)
     fper = price / eps1 if price and eps1 and eps1 > 0 else None    # non-GAAP 조정 EPS 기준 (사이트 Forward PE와 동일 정의)
     if fper is None and s.get("fPER(사이트)"): fper = s["fPER(사이트)"]
     ni1_adj = mcap / fper if mcap and fper else None
     g_rev1, g_op1 = cagr(rev1, rev0, 1), cagr(op1, op0, 1)
     g_rev2 = cagr(rev2, rev0, 2)
-    g_eps2 = cagr(f["eps2"], f["eps0"], 2) if f.get("eps2") and f.get("eps0") else None   # 영익 FY2 미제공 → EPS 2y CAGR 대용
+    g_eps2 = cagr(eps2, f.get("eps0"), 2) if eps2 and f.get("eps0") else None   # 영익 FY2 미제공 시 EPS 2y CAGR 대용
     opm1 = op1 / rev1 * 100 if op1 is not None and rev1 else None
     opm0 = op0 / rev0 * 100 if op0 is not None and rev0 else None
-    base = op0 is None or op0 <= 0 or (opm0 is not None and opm0 < 3)
+
+    # ── 기저효과: FY0 영업적자/저마진 + FY-1 영업적자 + FY0·FY-1 순손실 (최근 2년 내 적자 이력)
+    base = (op0 is None or op0 <= 0 or (opm0 is not None and opm0 < 3)
+            or (op_1 is not None and op_1 <= 0)
+            or (ni0 is not None and ni0 <= 0)
+            or (ni_1 is not None and ni_1 <= 0))
+
+    # ── 포워드 성장률 FY1→FY2: 바닥(FY0)을 시작점에서 제외. 영업이익 우선, 없으면 EPS
+    if op1 and op2 and op1 > 0:
+        g_fwd, fwd_src = cagr(op2, op1, 1), "op"
+    elif eps1 and eps2 and eps1 > 0:
+        g_fwd, fwd_src = cagr(eps2, eps1, 1), "eps"
+    else:
+        g_fwd, fwd_src = None, None
+
     def peg(g): return None if fper is None or g is None or g <= 0 else fper / g
     d = {"종목코드": ticker, **s, "추정연도": f["FY1"], "전년도": f["FY0"],
-         "매출(E)": rev1, "영업이익(E)": op1, "순이익(E)": ni1, "순이익(E,조정)": ni1_adj, "EPS(E)": eps1,
+         "매출(E)": rev1, "영업이익(E)": op1, "순이익(E)": ni1, "순이익(E,조정)": ni1_adj, "EPS(E)": eps1, "EPS(FY2)": eps2,
          "fPOR": fpor, "fPER": fper,
          "PEG(매출)1y": peg(g_rev1), "PEG(영익)1y": None if base else peg(g_op1),
          "PEG(매출)2y": peg(g_rev2), "PEG(영익)2y": peg(g_eps2), "PEG(영익)3y": None,
+         "PEG(영익)fwd": peg(g_fwd), "영익증가율fwd": g_fwd, "fwd기준": fwd_src,
          "영업이익률(E)": opm1, "전년영업이익률": opm0,
          "매출증가율1y": g_rev1, "영익증가율1y": g_op1, "목표주가": f["목표주가"],
          "통화": f.get("통화", "USD"), "환율": round(fx, 3) if fx != 1.0 else None,
-         "비고": "기저효과→PEG(영익)1y 산출불가" if base else ""}
+         "비고": "기저효과→PEG(영익)fwd 기준" if base else ""}
     return d
