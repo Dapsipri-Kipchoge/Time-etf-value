@@ -1,6 +1,11 @@
 """컨센서스 소스: 네이버증권(finance.naver.com) 기업실적분석 표
 (FnGuide가 해외 IP를 차단해 교체. 파일명은 호환을 위해 유지)
 밸류 지표 + 국내 1차 정량필터 4조건
+
+변경점
+- 기저효과 판정에 "FY-2 영업적자 / FY-1·FY-2 순손실" 추가
+- 포워드 PEG 추가: fPER ÷ (FY1→FY2 영업이익 성장률). 네이버가 FY2 추정을 안 주면 None
+- screen(): 기저효과면 유효PEG = fwd → 없으면 2y 폴백. 플래그에 어느 기준 썼는지 표기
 """
 import io, re
 import requests, pandas as pd
@@ -115,9 +120,14 @@ def compute_stock(code: str) -> dict:
         return to_num(fin.loc[row, col]) if row in fin.index and col in fin.columns else None
 
     y0 = est[0]
+    y1 = est[1] if len(est) >= 2 else None                      # FY2 추정 (네이버는 없을 때가 많음)
     rev0, op0, ni0 = g("매출액", y0), g("영업이익", y0), g("당기순이익", y0)
+    op1 = g("영업이익", y1) if y1 else None
     hist = {n: (g("매출액", act[-n]), g("영업이익", act[-n])) for n in (1, 2, 3) if len(act) >= n}
     rev_1, op_1 = hist.get(1, (None, None))
+    _, op_2 = hist.get(2, (None, None))
+    ni_1 = g("당기순이익", act[-1])
+    ni_2 = g("당기순이익", act[-2]) if len(act) >= 2 else None
 
     fper_site = g("PER", y0)
     mcap_note = ""
@@ -129,7 +139,12 @@ def compute_stock(code: str) -> dict:
     fper = mcap / ni0 if mcap and ni0 and ni0 > 0 else None
     opm0 = op0 / rev0 * 100 if op0 is not None and rev0 else None
     opm_1 = op_1 / rev_1 * 100 if op_1 is not None and rev_1 else None
-    base_effect = op_1 is None or op_1 <= 0 or (opm_1 is not None and opm_1 < 3)
+
+    # ── 기저효과: FY-1 영업적자/저마진 + FY-2 영업적자 + FY-1·FY-2 순손실 (최근 2년 내 적자 이력)
+    base_effect = (op_1 is None or op_1 <= 0 or (opm_1 is not None and opm_1 < 3)
+                   or (op_2 is not None and op_2 <= 0)
+                   or (ni_1 is not None and ni_1 <= 0)
+                   or (ni_2 is not None and ni_2 <= 0))
 
     pegs = {f"PEG({k}){n}y": None for n in (1, 2, 3) for k in ("매출", "영익")}
     for n, (r, o) in hist.items():
@@ -138,11 +153,15 @@ def compute_stock(code: str) -> dict:
     if base_effect:
         pegs["PEG(영익)1y"] = None
 
+    # ── 포워드 성장률 FY1→FY2 (바닥을 시작점에서 제외)
+    g_fwd = cagr(op1, op0, 1)
+
     d = {**base, "순이익(E)": ni0, "영업이익(E)": op0, "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site,
-         **pegs, "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
+         **pegs, "PEG(영익)fwd": peg(fper, g_fwd), "영익증가율fwd": g_fwd,
+         "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0),
          "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
          "배당수익률": g("시가배당률", act[-1]), "추정연도": y0, "전년영업이익률": opm_1, "전년도": act[-1],
-         "비고": mcap_note + ("기저효과→PEG(영익)1y 산출불가" if base_effect else "")}
+         "비고": mcap_note + ("기저효과→PEG(영익)fwd 기준" if base_effect else "")}
     return d
 
 
@@ -160,12 +179,20 @@ def _ok(x, lo=None, hi=None):
 def screen(d: dict, sector1: str) -> dict:
     g = d.get
     flags, fail = [], []
-    peg1, peg2, pegs1 = g("PEG(영익)1y"), g("PEG(영익)2y"), g("PEG(매출)1y")
+    peg1, peg2, pegf, pegs1 = g("PEG(영익)1y"), g("PEG(영익)2y"), g("PEG(영익)fwd"), g("PEG(매출)1y")
     base = "기저효과" in (g("비고") or "") or _ok(g("영익증가율1y"), lo=BASE_GROWTH_CAP)
+
+    # 유효 PEG(영익): 기저효과면 fwd(FY1→FY2) 우선, 없으면 2y 폴백 / 정상이면 1y
     if base:
-        flags.append("기저효과")
-    eff = peg2 if base else peg1                 # 유효 PEG(영익): 기저효과면 2y CAGR 기준
+        if pegf is not None or (g("영익증가율fwd") is not None):     # fwd 산출 가능(역성장으로 None인 경우 포함)
+            eff, src = pegf, "fwd"
+        else:
+            eff, src = peg2, "2y"
+        flags.append(f"기저효과({src})")
+    else:
+        eff = peg1
     d["유효PEG"] = eff
+
     fper, fsite, roe, opm = g("fPER"), g("fPER(사이트)"), g("ROE(E)"), g("영업이익률(E)")
     if fper and fsite and fsite > 0 and abs(fper / fsite - 1) > 0.3:
         flags.append("비지배괴리")
@@ -176,7 +203,13 @@ def screen(d: dict, sector1: str) -> dict:
         d.update(Type="보류", 탈락조건="컨센서스 없음", 플래그=",".join(flags)); return d
 
     if not _ok(pegs1, hi=CRITERIA["PEG(매출)1y"]): fail.append("PEG매출>1")
-    if not _ok(eff, hi=CRITERIA["PEG(영익)"]): fail.append("PEG영익>1")
+    if not _ok(eff, hi=CRITERIA["PEG(영익)"]):
+        if base and eff is None and g("영익증가율fwd") is not None and g("영익증가율fwd") <= 0:
+            fail.append("FY2역성장")                                  # 포워드 성장률 ≤ 0 → 사이클 정점 판정
+        elif base and eff is None:
+            fail.append("PEG산출불가")                                 # FY2 컨센서스 자체가 없음
+        else:
+            fail.append("PEG영익>1")
     if not _ok(roe, lo=CRITERIA["ROE(E)"]): fail.append("ROE<10")
     if not _ok(opm, lo=CRITERIA["영업이익률(E)"]): fail.append("이익률<10")
     if not _ok(fper, lo=0, hi=CRITERIA["fPER"]): fail.append("fPER>30")
