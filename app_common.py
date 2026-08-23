@@ -3,6 +3,8 @@ import pandas as pd
 import streamlit as st
 
 EXPAND, SHRINK = 0.10, -0.10
+UNSEC = "미분류"          # 섹터 정보 없음 — 섹터 제약(종목수·비중상한)에서 면제
+ROE_CLIP = 50.0           # 밸류점수 계산 시 ROE 상한 (자기자본 왜곡 종목 과대평가 방지)
 
 # ───────────────────────── 디자인 토큰
 CSS = """
@@ -162,9 +164,6 @@ def diff_status(cur, old):
     return m.drop(columns=["_merge", "종목명_전"])
 
 
-
-
-
 def run(cfg):
     global VAL
     MC = cfg["mcap_col"]
@@ -176,43 +175,40 @@ def run(cfg):
         hold = {p[-14:-4]: pd.read_csv(p, dtype={"종목코드": str}) for p in snaps}
         return res, hold
 
-
     try:
         df, hold = load()
     except FileNotFoundError:
         st.warning(f"{cfg['result']} 없음 — GitHub Actions를 먼저 실행하세요."); st.stop()
 
     for c in ("섹터1", "섹터2"):
-        if c not in df.columns: df[c] = "미분류"
-    for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", float("nan")), ("전년영업이익률", float("nan"))):
+        if c not in df.columns: df[c] = UNSEC
+    for c, dflt in (("Type", "탈락"), ("플래그", ""), ("유효PEG", float("nan")), ("전년영업이익률", float("nan")), ("PEG(영익)fwd", float("nan"))):
         if c not in df.columns: df[c] = dflt
-    for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "매출증가율1y", "밸류점수" if "밸류점수" in df.columns else "fPER"):
-        df[c] = pd.to_numeric(df[c], errors="coerce")
+    for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "PEG(영익)fwd", "ROE(E)", "영업이익률(E)", "매출증가율1y"):
+        if c in df.columns: df[c] = pd.to_numeric(df[c], errors="coerce")
     if "종목명" not in df.columns: df["종목명"] = df["기업"]
     dates = sorted(hold); latest = hold[dates[-1]] if dates else pd.DataFrame()
     prev = hold[dates[-2]] if len(dates) >= 2 else None
 
-
     # ───────────────────────── 밸류점수 (전체 모집단 백분위, 낮을수록 좋은 지표는 반전)
     def value_score(d: pd.DataFrame) -> pd.Series:
+        import numpy as np
         ok = ~d["Type"].isin(["보류", "금융"]) & d["fPER"].notna()
         peg = d["유효PEG"].fillna(d["PEG(영익)1y"]).fillna(d["PEG(영익)2y"])
         comp = {
             "peg": (peg.where(peg > 0), False, .35), "fper": (d["fPER"].where(d["fPER"] > 0), False, .25),
-            "roe": (d["ROE(E)"], True, .20), "opm": (d["영업이익률(E)"], True, .10), "g": (d["매출증가율1y"], True, .10)}
+            "roe": (d["ROE(E)"].clip(upper=ROE_CLIP), True, .20),          # ROE 상한 클리핑
+            "opm": (d["영업이익률(E)"], True, .10), "g": (d["매출증가율1y"], True, .10)}
         score = pd.Series(0.0, index=d.index); wsum = pd.Series(0.0, index=d.index)
         for s, higher, w in comp.values():
             r = s[ok].rank(pct=True); r = r if higher else 1 - r
             score = score.add(r * w, fill_value=0); wsum = wsum.add(s.notna().astype(float) * w, fill_value=0)
-        import numpy as np
         out = (score / wsum.replace(0, np.nan) * 100).astype(float).round(1)
         return out.where(ok)
 
-
     df["밸류점수"] = value_score(df)
 
-
-    VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "유효PEG", "영업이익률(E)", "전년영업이익률", "ROE(E)", "밸류점수", "탈락조건", "플래그"]
+    VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "PEG(영익)fwd", "유효PEG", "영업이익률(E)", "전년영업이익률", "ROE(E)", "밸류점수", "탈락조건", "플래그"]
     VAL = [c for c in VAL if c in df.columns]
     # ───────────────────────── 헤더
     st.markdown(f'<div class="eyebrow">{cfg["eyebrow"]}</div><div class="title">{cfg["title"]}</div>', unsafe_allow_html=True)
@@ -244,7 +240,9 @@ def run(cfg):
         c = st.columns(4)
         n = c[0].slider("종목 수", 5, 15, 10); per_sec = c[1].slider("섹터당 최대 종목", 1, 3, 2)
         cap = c[2].slider("섹터 비중 상한(%)", 15, 40, 25); style = c[3].selectbox("성향", ["균형", "성장(PEG 중심)", "퀄리티(ROE 중심)"])
+        # 통과 종목 + 듀얼클래스(GOOGL/GOOG 등) 중복 제거: 같은 종목명이면 밸류점수 높은 행만
         passed = df[(df["Type"] == "통과") & df["밸류점수"].notna()]
+        passed = passed.sort_values("밸류점수", ascending=False).drop_duplicates("종목명", keep="first")
         if "excl" not in st.session_state: st.session_state.excl = []
         c = st.columns([3, 1])
         mc_max_t = c[1].slider(cfg["mc_slider_label"], 0, cfg["mc_slider_max"], 0, step=cfg["mc_slider_step"])
@@ -257,24 +255,37 @@ def run(cfg):
         cand = passed[~passed["종목명"].isin(st.session_state.excl)].copy()
         if mc_max_t: cand = cand[cand[MC].fillna(0) <= mc_max_t * cfg["mc_slider_mult"]]
         cand["티어"] = 1
-        if style == "성장(PEG 중심)": cand["정렬"] = cand["밸류점수"] - cand["PEG(영익)1y"].fillna(cand["PEG(영익)2y"]).fillna(1) * 20
-        elif style == "퀄리티(ROE 중심)": cand["정렬"] = cand["밸류점수"] + cand["ROE(E)"].fillna(0) * 0.5
+        if style == "성장(PEG 중심)": cand["정렬"] = cand["밸류점수"] - cand["유효PEG"].fillna(cand["PEG(영익)2y"]).fillna(1) * 20
+        elif style == "퀄리티(ROE 중심)": cand["정렬"] = cand["밸류점수"] + cand["ROE(E)"].clip(upper=ROE_CLIP).fillna(0) * 0.5
         else: cand["정렬"] = cand["밸류점수"] + cand["보유ETF수"] * 3       # ETF 다수 보유 = 운용사 확신 가점
         cand = cand.sort_values(["티어", "정렬"], ascending=False)
+
+        # 선정: 섹터당 최대 종목 수 제한 (미분류는 면제)
         picks, cnt = [], {}
         for _, r in cand.iterrows():
-            if cnt.get(r["섹터1"], 0) >= per_sec: continue
-            picks.append(r); cnt[r["섹터1"]] = cnt.get(r["섹터1"], 0) + 1
+            s = r["섹터1"]
+            if s != UNSEC and cnt.get(s, 0) >= per_sec: continue
+            picks.append(r); cnt[s] = cnt.get(s, 0) + 1
             if len(picks) >= n: break
         P = pd.DataFrame(picks)
         if P.empty:
             st.info("통과 종목이 없음 — 기준을 전부 충족하는 종목이 나올 때까지 빈 상태로 둠")
         else:
+            P = P.reset_index(drop=True)
             w = P["정렬"].clip(lower=1); w = w / w.sum()
-            for _ in range(10):                                              # 섹터 상한 적용
-                sw = w.groupby(P["섹터1"]).transform("sum"); over = sw > cap / 100
+            # 섹터 상한: 실제 섹터 수로 실현 가능한 값까지 보정 (2섹터면 최소 50%), 미분류 면제, 마지막에 합 100% 강제
+            real_secs = [s for s in P["섹터1"].unique() if s != UNSEC]
+            eff_cap = max(cap / 100, 1 / len(real_secs)) if real_secs else 1.0
+            is_sec = P["섹터1"] != UNSEC
+            for _ in range(20):
+                sw = w.groupby(P["섹터1"]).transform("sum")
+                over = (sw > eff_cap + 1e-9) & is_sec
                 if not over.any(): break
-                w[over] *= (cap / 100) / sw[over]; w[~over] *= (1 - w[over].sum()) / w[~over].sum()
+                scale = eff_cap / sw[over]
+                excess = (w[over] * (1 - scale)).sum()
+                w[over] = w[over] * scale
+                if (~over).any(): w[~over] = w[~over] + excess * w[~over] / w[~over].sum()
+            w = w / w.sum()
             P["비중(%)"] = (w * 100).round(1)
             picked = set(P["종목명"])
             def _alt(r):
@@ -289,7 +300,8 @@ def run(cfg):
             pal = ["#4C8DFF", "#2ED47A", "#F5B942", "#FF5C6C", "#9B7BFF", "#2FC6D6", "#FF9F5A", "#7DD3FC", "#C084FC", "#A3E635"]
             bar = "".join(f'<i style="width:{v}%;background:{pal[i % len(pal)]}" title="{k} {v:.0f}%"></i>' for i, (k, v) in enumerate(alloc.items()))
             leg = " &nbsp; ".join(f'<span style="color:{pal[i % len(pal)]}">■</span> {k} {v:.0f}%' for i, (k, v) in enumerate(alloc.items()))
-            kpis([("종목", len(P), f"{style} · 통과 {len(cand)}개 중", ""), ("섹터 수", len(alloc), f"상한 {cap}%", "up"),
+            cap_note = f"상한 {eff_cap*100:.0f}%" + (f" (요청 {cap}% → 섹터 {len(real_secs)}개라 보정)" if eff_cap > cap / 100 + 1e-9 else "")
+            kpis([("종목", len(P), f"{style} · 통과 {len(cand)}개 중", ""), ("섹터 수", len(alloc), cap_note, "up"),
                   ("가중 fPER", f'{(P["fPER"] * w).sum():.1f}', "비중가중", "amb"),
                   ("가중 ROE", f'{(P["ROE(E)"].fillna(0) * w).sum():.0f}%', "비중가중", "amb")])
             st.markdown(f'<div class="card"><div class="note" style="margin-bottom:6px">섹터 배분</div><div class="bar">{bar}</div><div class="note" style="margin-top:8px">{leg}</div></div>', unsafe_allow_html=True)
@@ -298,7 +310,7 @@ def run(cfg):
             for i, (_, r) in enumerate(P.iterrows()):
                 if bc[i % len(bc)].button(f"✕ {r['종목명']}", key=f"ex_{r['종목코드']}", help=f"{r['섹터1']} · 대안: {r['섹터 대안']}"):
                     st.session_state.excl.append(r["종목명"]); st.rerun()
-            if len(P) < n: st.markdown(f'<div class="note">통과 종목이 {len(P)}개라 {n}개를 채우지 못함 — 기준 완화 없이 그대로 표시</div>', unsafe_allow_html=True)
+            if len(P) < n: st.markdown(f'<div class="note">통과 종목이 {len(P)}개라 {n}개를 채우지 못함 — 섹터당 {per_sec}개 제한 또는 통과 종목 부족</div>', unsafe_allow_html=True)
             st.markdown('<div class="note">통과 종목만으로 규칙 구성(밸류점수·섹터 분산)이며 투자 권유가 아님.</div>', unsafe_allow_html=True)
 
     # ═════════ 3. ETF별
@@ -336,12 +348,11 @@ def run(cfg):
             if q: pv = pv[pv["종목명"].str.contains(q, case=False, na=False) | pv["종목코드"].str.contains(q)]
             table(pv, list(pv.columns), height=500)
 
-
     # ═════════ 5. 워치리스트
     with T[4]:
         try:
             W = pd.read_csv(cfg["watch"], dtype={"종목코드": str})
-            for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "ROE(E)", "영업이익률(E)", "전년영업이익률", "매출증가율1y", MC):
+            for c in ("유효PEG", "fPER", "fPOR", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "PEG(영익)fwd", "ROE(E)", "영업이익률(E)", "전년영업이익률", "매출증가율1y", MC):
                 if c in W.columns: W[c] = pd.to_numeric(W[c], errors="coerce")
             for c, dflt in (("Type", "탈락"), ("플래그", ""), ("메모", "")):
                 if c not in W.columns: W[c] = dflt
