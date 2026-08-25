@@ -4,6 +4,7 @@ import pandas as pd
 from fnguide import screen
 from stockanalysis import compute_us, fetch_industry
 from us_sectors import classify
+from us_watchlist import US_WATCHLIST
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 TIME_US_ETFS = {  # idx: 이름
@@ -85,6 +86,18 @@ if __name__ == "__main__":
         d = screen(d, d["섹터1"])
         rows.append(d); print(f"  {t}: {d.get('Type')} {d.get('비고','')}")
         time.sleep(1.2)
+    wrows = []
+    for t, (nm, s1, s2, memo) in US_WATCHLIST.items():
+        try:
+            d = compute_us(t.lower()); d["종목코드"] = t
+        except Exception as e:
+            d = {"종목코드": t, "기업": nm, "비고": f"실패: {e}"}
+        d.update(종목명=nm, 섹터1=s1, 섹터2=s2, 메모=memo, 기준일=today)
+        d = screen(d, s1)
+        wrows.append(d); print(f"  [watch] {t}: {d.get('Type')}")
+        time.sleep(1.2)
+    pd.DataFrame(wrows).to_csv("data/us_watchlist.csv", index=False, encoding="utf-8-sig")
+
     out = pd.DataFrame(rows); out["기준일"] = today
     out.to_csv("data/us_result.csv", index=False, encoding="utf-8-sig")
     out.to_csv(f"data/us_result_{today}.csv", index=False, encoding="utf-8-sig")
