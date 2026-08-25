@@ -17,11 +17,11 @@ US_CRITERIA = """
 <tr><td class="l">전년 영업이익률</td><td>≥ 5%</td><td class="l">FY0 확정 실적</td></tr>
 </tbody></table></div>
 <div class="card"><div class="eyebrow">국장과 다른 점</div>
-<p style="margin:6px 0 0">① ROE가 추정치가 아니라 TTM 실적 ② PEG(영익) 2y가 EPS 기준 ③ 회계연도가 회사마다 달라(예: 엔비디아 1월 결산) FY1이 2026 또는 2027 ④ 참고 컬럼으로 <b>ROIC·WACC</b> 제공 — ROIC &lt; WACC면 자본비용을 못 버는 회사(기준에는 미포함) ⑤ ADR(TSM·ASML·BABA 등)은 현지통화 추정치를 사이트 TTM 매출(USD/현지) 비율로 환산 ⑥ fPOR은 GAAP 영업이익 기준(조정 영업이익 미제공)</p></div>
+<p style="margin:6px 0 0">① ROE가 추정치가 아니라 TTM 실적 ② PEG(영익) 2y가 EPS 기준 ③ 회계연도가 회사마다 달라(예: 엔비디아 1월 결산) FY1이 2026 또는 2027 ④ 참고 컬럼으로 <b>ROIC·WACC</b> 제공 — ROIC &lt; WACC면 자본비용을 못 버는 회사(기준에는 미포함) ⑤ <b>미국 기업만 포함</b> — 미국 상장이어도 외국적 기업(TSMC·ASML·BABA·ARM·SK하이닉스 ADR 등)은 모집단에서 제외(제외 목록 + 재무통화≠USD 자동 감지) ⑥ fPOR은 GAAP 영업이익 기준(조정 영업이익 미제공) ⑦ 영업이익 컨센이 없는 업종(유틸리티 등)은 TTM 이익률 대용 — 비고에 표시</p></div>
 <div class="card"><div class="eyebrow">판정 라벨 · 플래그 · 밸류점수</div>
 <p style="margin:6px 0 0">국장과 동일. <span class="bd pass">통과</span> <span class="bd fail">탈락</span> <span class="bd hold">금융</span> <span class="bd keep">보류</span> · 플래그 <span class="bd flag">기저효과</span> <span class="bd flag">비지배괴리</span>(직접 fPER vs 사이트 Forward PE 30%↑ 차이 — non-GAAP EPS 기준 차이일 수 있음) · 밸류점수 = 모집단 백분위 가중합</p></div>
 <div class="card"><div class="eyebrow">데이터</div>
-<p style="margin:6px 0 0">모집단: 타임폴리오 해외 ETF 10종 구성종목 중 미국 상장 주식(… US EQUITY) 합집합 · 컨센서스·시총: StockAnalysis.com(S&P Global) Forecast·Statistics · 매 평일 18:30 KST 수집(미국 전일 종가 기준) · 단위 $M</p></div>
+<p style="margin:6px 0 0">모집단: 타임폴리오 해외 ETF 10종 구성종목 중 미국 상장 <b>미국 기업</b>(… US EQUITY, 외국적 ADR 제외) 합집합 · 컨센서스·시총: StockAnalysis.com(S&P Global) Forecast·Statistics · 매 평일 18:30 KST 수집(미국 전일 종가 기준) · 단위 $M</p></div>
 """
 
 run(dict(
