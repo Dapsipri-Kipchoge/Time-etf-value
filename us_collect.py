@@ -12,6 +12,9 @@ TIME_US_ETFS = {  # idx: 이름
 }
 VIEW = "https://timeetf.co.kr/m11_view.php?idx={idx}&cate=001"
 
+# 미국 상장이지만 미국 기업이 아닌 ADR/외국적 기업 — 모집단에서 제외
+EXCLUDE_FOREIGN = {"TSM", "ASML", "BABA", "PDD", "ARM", "SAP", "SKHY", "TSEM", "NBIS", "SE", "SNY", "NVO", "AZN", "SHOP", "SPOT", "TM", "SONY", "UMC", "GRAB", "CPNG", "JD", "BIDU", "NTES", "TCOM", "LI", "XPEV", "NIO", "ZK", "HMC", "MUFG", "SMFG", "IBN", "HDB", "INFY", "WIT", "RIO", "BHP", "VALE", "SCCO"}
+
 
 def etf_holdings(idx):
     from playwright.sync_api import sync_playwright
@@ -56,6 +59,9 @@ if __name__ == "__main__":
     hold["기준일"] = today
     hold.to_csv("data/us_holdings.csv", index=False, encoding="utf-8-sig")
     hold.to_csv(f"data/us_holdings_{today}.csv", index=False, encoding="utf-8-sig")
+    n0 = hold["종목코드"].nunique()
+    hold = hold[~hold["종목코드"].isin(EXCLUDE_FOREIGN)]
+    print(f"외국적 ADR 제외: {n0 - hold['종목코드'].nunique()}종목")
     uni = (hold.groupby("종목코드").agg(종목명=("종목명", "first"), 보유ETF수=("ETF", "nunique"),
                                        보유ETF=("ETF", lambda s: ",".join(sorted(set(s)))), 최대비중=("비중", "max"))
            .reset_index().sort_values(["보유ETF수", "최대비중"], ascending=False))
@@ -72,6 +78,8 @@ if __name__ == "__main__":
             d = {"종목코드": t, "기업": r["종목명"], "비고": f"실패: {e}"}
         ind = fetch_industry(t.lower())
         d["섹터1"], d["섹터2"] = classify(t, ind)
+        if d.get("통화", "USD") != "USD":                     # 안전망: 재무통화가 USD가 아니면 외국 기업으로 보고 제외
+            print(f"  {t}: 제외 (재무통화 {d['통화']})"); time.sleep(1.2); continue
         d["종목명"] = r["종목명"]
         d.update(보유ETF수=r["보유ETF수"], 보유ETF=r["보유ETF"], 최대비중=r["최대비중"])
         d = screen(d, d["섹터1"])
