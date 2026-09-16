@@ -90,47 +90,58 @@ def fetch_finance(code) -> pd.DataFrame:
     return fin[sorted(fin.columns)]
 
 
-def fetch_meta(code):
-    """종목명·현재가·시가총액(억)·업종 — 실패해도 None으로 진행"""
-    name = price = mcap = sec = None
+def _krw_to_eok(raw):
+    """'1,474조 7,238억' / '2,566억' / '7,238억원' → 억원 float"""
+    raw = str(raw).replace(" ", "").replace("원", "")
+    m = re.fullmatch(r"(?:([\d,]+)조)?(?:([\d,]+)억)?", raw)
+    if not m or not (m.group(1) or m.group(2)):
+        return to_num(raw)
+    return (to_num(m.group(1)) or 0) * 10000 + (to_num(m.group(2)) or 0)
+
+
+def fetch_meta(code) -> dict:
+    """integration API → 종목명·현재가·시총(억)·배당수익률·52주·추정PER·목표주가
+    실제 스키마: stockName, totalInfos[{code,key,value}], dealTrendInfos[{bizdate,closePrice}], consensusInfo{priceTargetMean}"""
+    out = {"기업": None, "현재가": None, "시총(억)": None, "네이버업종": "", "배당수익률(사이트)": None,
+           "52주고가": None, "52주저가": None, "추정PER(사이트)": None, "목표주가": None, "외인비율": None}
     try:
+        j = _api_json(M_INTEG, code)
+    except Exception as e:
+        print(f"  [debug] integration 실패 {code}: {e}"); return out
+    out["기업"] = j.get("stockName")
+    kv = {str(i.get("code")): str(i.get("value")) for i in (j.get("totalInfos") or []) if isinstance(i, dict)}
+    deals = j.get("dealTrendInfos") or []
+    if deals and isinstance(deals[0], dict) and deals[0].get("closePrice"):
+        out["현재가"] = to_num(deals[0]["closePrice"])          # 최근 거래일 종가
+    if out["현재가"] is None:
+        out["현재가"] = to_num(kv.get("lastClosePrice"))
+    out["시총(억)"] = _krw_to_eok(kv.get("marketValue", ""))
+    out["배당수익률(사이트)"] = to_num(kv.get("dividendYieldRatio"))
+    out["52주고가"], out["52주저가"] = to_num(kv.get("highPriceOf52Weeks")), to_num(kv.get("lowPriceOf52Weeks"))
+    out["추정PER(사이트)"] = to_num(str(kv.get("cnsPer", "")).replace("배", ""))
+    out["외인비율"] = to_num(kv.get("foreignRate"))
+    ci = j.get("consensusInfo") or {}
+    out["목표주가"] = to_num(ci.get("priceTargetMean")) if isinstance(ci, dict) else None
+    out["네이버업종"] = str(j.get("industryCode") or "")
+    try:                                                     # 업종명은 basic에 있을 수 있음 (없어도 무방)
         b = _api_json(M_BASIC, code)
         for node in _walk(b):
             if isinstance(node, dict):
-                name = name or node.get("stockName") or node.get("itemName")
-                if price is None:
-                    for k in ("closePrice", "currentPrice", "now", "nv"):
-                        if node.get(k) not in (None, ""):
-                            price = to_num(node[k]); break
-    except Exception as e:
-        print(f"  [debug] basic 실패 {code}: {e}")
-    try:
-        it = _api_json(M_INTEG, code)
-        kv = {}
-        for node in _walk(it):
-            if isinstance(node, dict):
-                key, val = node.get("code") or node.get("key"), node.get("value")
-                if key and val is not None and not isinstance(val, (dict, list)):
-                    kv[str(key)] = str(val)
-                name = name or node.get("stockName") or node.get("itemName")
-                if sec is None:
-                    for k in ("industryGroupKor", "industryName", "upjongName", "sectorName"):
-                        if node.get(k): sec = str(node[k]); break
-        raw = (kv.get("marketValue") or kv.get("시총") or kv.get("시가총액") or "").replace(" ", "")
-        m = re.search(r"(?:([\d,]+)조)?([\d,]+)?억?", raw)
-        if m and (m.group(1) or m.group(2)):
-            mcap = (to_num(m.group(1)) or 0) * 10000 + (to_num(m.group(2)) or 0)
-        if price is None and kv.get("closePrice"): price = to_num(kv["closePrice"])
-    except Exception as e:
-        print(f"  [debug] integration 실패 {code}: {e}")
-    return name, price, mcap, sec
+                for k in ("industryGroupKor", "industryName", "upjongName", "sectorName"):
+                    if node.get(k): out["네이버업종"] = str(node[k]); raise StopIteration
+    except StopIteration:
+        pass
+    except Exception:
+        pass
+    return out
 
 
 # ───────────────────────── 지표 계산
 def compute_stock(code: str) -> dict:
     fin = fetch_finance(code)
-    name, price, mcap, naver_sec = fetch_meta(code)
-    base = {"종목코드": code, "기업": name or "?", "현재가": price, "시총(억)": mcap, "네이버업종": naver_sec or ""}
+    meta = fetch_meta(code)
+    price, mcap = meta["현재가"], meta["시총(억)"]
+    base = {"종목코드": code, **{k: v for k, v in meta.items() if k != "기업"}, "기업": meta["기업"] or "?"}
 
     years = [c for c in fin.columns if re.fullmatch(r"\d{4}\.\d{2}(\(E\))?", c)]
     est = [y for y in years if "(E)" in y]
@@ -171,7 +182,8 @@ def compute_stock(code: str) -> dict:
             "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site, **pegs,
             "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0), "부채비율": g("부채비율", act[-1]),
             "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
-            "배당수익률": (dps / price * 100 if dps and price else None),
+            "배당수익률": meta["배당수익률(사이트)"] if meta["배당수익률(사이트)"] is not None else (dps / price * 100 if dps and price else None),
+            "괴리율(목표주가)": ((meta["목표주가"] / price - 1) * 100 if meta["목표주가"] and price else None),
             "추정연도": y0, "전년영업이익률": opm_1, "전년도": act[-1],
             "비고": mcap_note + ni_note + ("기저효과→PEG(영익)1y 산출불가" if base_effect else "")}
 
