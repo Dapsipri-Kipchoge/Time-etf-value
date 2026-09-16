@@ -215,7 +215,7 @@ def run(cfg):
     df["밸류점수"] = value_score(df)
 
 
-    VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "유효PEG", "영업이익률(E)", "전년영업이익률", "ROE(E)", "밸류점수", "탈락조건", "플래그"]
+    VAL = ["Type", "fPOR", "fPER", "fPER(사이트)", "PEG(매출)1y", "PEG(영익)1y", "PEG(영익)2y", "유효PEG", "영업이익률(E)", "전년영업이익률", "ROE(E)", "밸류점수", "괴리율(목표주가)", "배당수익률", "탈락조건", "플래그"]
     VAL = [c for c in VAL if c in df.columns]
     # ───────────────────────── 헤더
     st.markdown(f'<div class="eyebrow">{cfg["eyebrow"]}</div><div class="title">{cfg["title"]}</div>', unsafe_allow_html=True)
