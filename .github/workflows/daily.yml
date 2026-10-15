@@ -1,7 +1,7 @@
 name: daily-collect
 on:
   schedule:
-    - cron: "17 9 * * 1-5"   # 평일 KST 18:30
+    - cron: "17 9 * * 1-5"   # 평일 KST 18:17
   workflow_dispatch:
 permissions:
   contents: write
