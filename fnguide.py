@@ -190,6 +190,8 @@ def compute_stock(code: str) -> dict:
 
 # ───────────────────────── 스크리닝 (단일 기준 6개, 전부 충족 = 통과)
 CRITERIA = {"PEG(매출)1y": 1.0, "PEG(영익)": 1.0, "ROE(E)": 10.0, "영업이익률(E)": 10.0, "fPER": 30.0, "전년영업이익률": 5.0}
+# 미장 완화: PEG(매출) 1.2, fPER 30 초과여도 (fPER ≤ 50 and 유효PEG ≤ 0.7)이면 성장 정당화로 허용
+CRITERIA_US = {**CRITERIA, "PEG(매출)1y": 1.2, "fPER_ext": 50.0, "PEG_ext": 0.7}
 BASE_GROWTH_CAP = 150.0      # 영익증가율 150% 초과 시 기저효과로 간주
 
 
@@ -199,7 +201,8 @@ def _ok(x, lo=None, hi=None):
     return (lo is None or x >= lo) and (hi is None or x <= hi)
 
 
-def screen(d: dict, sector1: str) -> dict:
+def screen(d: dict, sector1: str, market: str = "KR") -> dict:
+    C = CRITERIA_US if market == "US" else CRITERIA
     g = d.get
     flags, fail = [], []
     peg1, peg2, pegs1 = g("PEG(영익)1y"), g("PEG(영익)2y"), g("PEG(매출)1y")
@@ -217,11 +220,15 @@ def screen(d: dict, sector1: str) -> dict:
     if fper is None and g("순이익(E)") is None:
         d.update(Type="보류", 탈락조건="컨센서스 없음", 플래그=",".join(flags)); return d
 
-    if not _ok(pegs1, hi=CRITERIA["PEG(매출)1y"]): fail.append("PEG매출>1")
+    if not _ok(pegs1, hi=C["PEG(매출)1y"]): fail.append(f"PEG매출>{C['PEG(매출)1y']:g}")
     if not _ok(eff, hi=CRITERIA["PEG(영익)"]): fail.append("PEG영익>1")
     if not _ok(roe, lo=CRITERIA["ROE(E)"]): fail.append("ROE<10")
     if not _ok(opm, lo=CRITERIA["영업이익률(E)"]): fail.append("이익률<10")
-    if not _ok(fper, lo=0, hi=CRITERIA["fPER"]): fail.append("fPER>30")
+    if not _ok(fper, lo=0, hi=C["fPER"]):
+        if market == "US" and _ok(fper, lo=0, hi=C["fPER_ext"]) and _ok(eff, hi=C["PEG_ext"]):
+            flags.append("성장정당화")           # fPER 30~50이지만 유효PEG ≤ 0.7 → 허용
+        else:
+            fail.append("fPER>30" if market == "KR" else "fPER>30(PEG>0.7)" if _ok(fper, lo=0, hi=C["fPER_ext"]) else "fPER>50")
     if not _ok(g("전년영업이익률"), lo=CRITERIA["전년영업이익률"]): fail.append("전년이익률<5")
     d.update(Type="통과" if not fail else "탈락", 탈락조건=",".join(fail), 플래그=",".join(flags))
     return d
