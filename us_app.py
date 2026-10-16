@@ -6,14 +6,14 @@ st.set_page_config(page_title="TIME ETF 밸류 스크리너 · 미장", layout="
 st.markdown(CSS, unsafe_allow_html=True)
 
 US_CRITERIA = """
-<div class="card"><div class="eyebrow">통과 기준 (미장 · 국장과 동일)</div>
-<p style="margin:6px 0 10px">아래 <b>6개를 전부 충족</b>해야 통과. 섹터 구분 없이 동일 적용.</p>
+<div class="card"><div class="eyebrow">통과 기준 (미장 · 국장 대비 2개 완화)</div>
+<p style="margin:6px 0 10px">아래 <b>6개를 전부 충족</b>해야 통과. 미장은 주도 성장 섹터가 밸류 기준만으로 탈락하지 않도록 <b>PEG(매출)·fPER 두 조건을 완화</b>.</p>
 <table class="t"><thead><tr><th class="l">지표</th><th>기준</th><th class="l">계산 (StockAnalysis 컨센서스, $)</th></tr></thead><tbody>
-<tr><td class="l">PEG(매출) 1y</td><td>≤ 1.0</td><td class="l">fPER ÷ 매출증가율(FY0 확정 → FY1 추정, %)</td></tr>
+<tr><td class="l">PEG(매출) 1y</td><td>≤ <b>1.2</b></td><td class="l">fPER ÷ 매출증가율(FY0 확정 → FY1 추정, %)</td></tr>
 <tr><td class="l">PEG(영익)</td><td>≤ 1.0</td><td class="l">fPER ÷ 영업이익증가율(1y). <b>기저효과</b>면 2y 기준으로 대체 — FY2 영업이익이 무료 데이터에 없어 <b>EPS 2y CAGR</b>로 대용</td></tr>
 <tr><td class="l">ROE</td><td>≥ 10%</td><td class="l">최근 12개월 실적 ROE (추정 ROE 미제공)</td></tr>
 <tr><td class="l">영업이익률(E)</td><td>≥ 10%</td><td class="l">FY1 영업이익 ÷ 매출</td></tr>
-<tr><td class="l">fPER</td><td>≤ 30</td><td class="l">현재가 ÷ FY1 <b>non-GAAP 조정 EPS</b> (사이트 Forward PE와 동일 정의 · 주식보상비용 제외)</td></tr>
+<tr><td class="l">fPER</td><td>≤ 30<br><span class="note">또는 ≤ 50 &amp; 유효PEG ≤ 0.7</span></td><td class="l">현재가 ÷ FY1 <b>non-GAAP 조정 EPS</b>. fPER 30~50이어도 유효PEG ≤ 0.7(성장이 멀티플을 1.5배 이상 정당화)이면 통과 — 플래그 <span class="bd flag">성장정당화</span> 표시</td></tr>
 <tr><td class="l">전년 영업이익률</td><td>≥ 5%</td><td class="l">FY0 확정 실적</td></tr>
 </tbody></table></div>
 <div class="card"><div class="eyebrow">국장과 다른 점</div>
