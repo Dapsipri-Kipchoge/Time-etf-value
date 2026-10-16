@@ -83,7 +83,7 @@ if __name__ == "__main__":
             print(f"  {t}: 제외 (재무통화 {d['통화']})"); time.sleep(1.2); continue
         d["종목명"] = r["종목명"]
         d.update(보유ETF수=r["보유ETF수"], 보유ETF=r["보유ETF"], 최대비중=r["최대비중"])
-        d = screen(d, d["섹터1"])
+        d = screen(d, d["섹터1"], market="US")
         rows.append(d); print(f"  {t}: {d.get('Type')} {d.get('비고','')}")
         time.sleep(1.2)
     wrows = []
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         except Exception as e:
             d = {"종목코드": t, "기업": nm, "비고": f"실패: {e}"}
         d.update(종목명=nm, 섹터1=s1, 섹터2=s2, 메모=memo, 기준일=today)
-        d = screen(d, s1)
+        d = screen(d, s1, market="US")
         wrows.append(d); print(f"  [watch] {t}: {d.get('Type')}")
         time.sleep(1.2)
     pd.DataFrame(wrows).to_csv("data/us_watchlist.csv", index=False, encoding="utf-8-sig")
