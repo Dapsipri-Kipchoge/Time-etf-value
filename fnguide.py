@@ -16,6 +16,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 M_BASIC = "https://m.stock.naver.com/api/stock/{code}/basic"
 M_INTEG = "https://m.stock.naver.com/api/stock/{code}/integration"
 M_ANNUAL = "https://m.stock.naver.com/api/stock/{code}/finance/annual"
+M_QUARTER = "https://m.stock.naver.com/api/stock/{code}/finance/quarter"
 M_REFERER = "https://m.stock.naver.com/domestic/stock/{code}/total"
 
 ITEMS = {"매출액", "영업이익", "당기순이익", "지배주주순이익", "ROE", "PER", "주당배당금", "부채비율"}
@@ -62,9 +63,9 @@ def peg(fper, g):
 
 
 # ───────────────────────── 수집
-def fetch_finance(code) -> pd.DataFrame:
-    """연간 재무 → DataFrame(index=항목, columns='2026.12(E)' 형식)"""
-    j = _api_json(M_ANNUAL, code)
+def fetch_finance(code, url=None) -> pd.DataFrame:
+    """연간(기본)/분기 재무 → DataFrame(index=항목, columns='2026.12(E)' 형식)"""
+    j = _api_json(url or M_ANNUAL, code)
     fi = j.get("financeInfo") if isinstance(j, dict) and isinstance(j.get("financeInfo"), dict) else (j if isinstance(j, dict) else {})
     trs = {str(t.get("key")): t for t in (fi.get("trTitleList") or []) if isinstance(t, dict)}
 
@@ -136,6 +137,20 @@ def fetch_meta(code) -> dict:
     return out
 
 
+def ttm_control_ratio(code):
+    """최근 4개 확정 분기 합산 지배순이익 ÷ 당기순이익 (이익 구성 변화를 연간보다 빨리 반영)"""
+    try:
+        q = fetch_finance(code, M_QUARTER)
+    except Exception:
+        return None
+    cols = [c for c in q.columns if re.fullmatch(r"\d{4}\.\d{2}", c)][-4:]
+    if len(cols) < 4 or "지배주주순이익" not in q.index or "당기순이익" not in q.index:
+        return None
+    c = sum(to_num(q.loc["지배주주순이익", k]) or 0 for k in cols)
+    t = sum(to_num(q.loc["당기순이익", k]) or 0 for k in cols)
+    return c / t if t > 0 and c > 0 and 0.3 <= c / t <= 1.5 else None
+
+
 # ───────────────────────── 지표 계산
 def compute_stock(code: str) -> dict:
     fin = fetch_finance(code)
@@ -155,15 +170,19 @@ def compute_stock(code: str) -> dict:
     y0 = est[0]
     rev0, op0 = g("매출액", y0), g("영업이익", y0)
     # 지배주주순이익(E): 컨센이 있으면 그대로, 없으면(대부분 "-") 당기순이익(E) × 최근 실적연도 지배비율
-    ni0, ni_note, ctrl_ratio = g("지배주주순이익", y0), "", None
-    for y in reversed(act):                               # 최근 확정 연도부터 지배비율 탐색
-        c, t = g("지배주주순이익", y), g("당기순이익", y)
-        if c is not None and t and t > 0 and c > 0 and 0.3 <= c / t <= 1.5:
-            ctrl_ratio = c / t; break
+    ni0, ni_note, ctrl_ratio, ratio_src = g("지배주주순이익", y0), "", None, ""
+    if ni0 is None:
+        ctrl_ratio = ttm_control_ratio(code)                  # 1순위: 최근 4분기(TTM)
+        ratio_src = "TTM" if ctrl_ratio is not None else ""
+    if ni0 is None and ctrl_ratio is None:
+        for y in reversed(act):                           # 2순위: 최근 확정 연도
+            c, t = g("지배주주순이익", y), g("당기순이익", y)
+            if c is not None and t and t > 0 and c > 0 and 0.3 <= c / t <= 1.5:
+                ctrl_ratio, ratio_src = c / t, y; break
     if ni0 is None:
         ni_tot = g("당기순이익", y0)
         if ni_tot is not None and ctrl_ratio is not None:
-            ni0, ni_note = ni_tot * ctrl_ratio, f"지배순이익=당기순이익×지배비율{ctrl_ratio:.2f};"
+            ni0, ni_note = ni_tot * ctrl_ratio, f"지배순이익=당기순이익×지배비율{ctrl_ratio:.2f}({ratio_src});"
         else:
             ni0, ni_note = ni_tot, "순이익=당기순이익 대체(지배비율 산출불가);"
     hist = {n: (g("매출액", act[-n]), g("영업이익", act[-n])) for n in (1, 2, 3) if len(act) >= n}
