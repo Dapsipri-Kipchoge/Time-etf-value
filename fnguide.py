@@ -5,7 +5,7 @@
   - https://m.stock.naver.com/api/stock/{code}/integration      시가총액·업종
 정의:
   fPOR = 시가총액 ÷ 당해(E) 영업이익
-  fPER = 시가총액 ÷ 당해(E) 지배주주순이익   (지배주주 없으면 당기순이익으로 대체, 비고 표시)
+  fPER = 시가총액 ÷ 당해(E) 지배주주순이익   (지배 컨센 없으면 당기순이익(E) × 최근 실적 지배비율, 비고 표시)
 """
 import re
 import requests
@@ -154,9 +154,18 @@ def compute_stock(code: str) -> dict:
 
     y0 = est[0]
     rev0, op0 = g("매출액", y0), g("영업이익", y0)
-    ni0, ni_note = g("지배주주순이익", y0), ""
-    if ni0 is None:                                   # 지배주주 컨센 없으면 당기순이익으로 대체
-        ni0, ni_note = g("당기순이익", y0), "순이익=당기순이익 대체;"
+    # 지배주주순이익(E): 컨센이 있으면 그대로, 없으면(대부분 "-") 당기순이익(E) × 최근 실적연도 지배비율
+    ni0, ni_note, ctrl_ratio = g("지배주주순이익", y0), "", None
+    for y in reversed(act):                               # 최근 확정 연도부터 지배비율 탐색
+        c, t = g("지배주주순이익", y), g("당기순이익", y)
+        if c is not None and t and t > 0 and c > 0 and 0.3 <= c / t <= 1.5:
+            ctrl_ratio = c / t; break
+    if ni0 is None:
+        ni_tot = g("당기순이익", y0)
+        if ni_tot is not None and ctrl_ratio is not None:
+            ni0, ni_note = ni_tot * ctrl_ratio, f"지배순이익=당기순이익×지배비율{ctrl_ratio:.2f};"
+        else:
+            ni0, ni_note = ni_tot, "순이익=당기순이익 대체(지배비율 산출불가);"
     hist = {n: (g("매출액", act[-n]), g("영업이익", act[-n])) for n in (1, 2, 3) if len(act) >= n}
     rev_1, op_1 = hist.get(1, (None, None))
 
@@ -178,7 +187,7 @@ def compute_stock(code: str) -> dict:
         pegs["PEG(영익)1y"] = None
 
     dps = g("주당배당금", act[-1])
-    return {**base, "순이익(E)": ni0, "당기순이익(E)": g("당기순이익", y0), "영업이익(E)": op0,
+    return {**base, "순이익(E)": ni0, "당기순이익(E)": g("당기순이익", y0), "지배비율": ctrl_ratio, "영업이익(E)": op0,
             "fPOR": fpor, "fPER": fper, "fPER(사이트)": fper_site, **pegs,
             "영업이익률(E)": opm0, "ROE(E)": g("ROE", y0), "부채비율": g("부채비율", act[-1]),
             "매출증가율1y": cagr(rev0, rev_1, 1), "영익증가율1y": cagr(op0, op_1, 1),
