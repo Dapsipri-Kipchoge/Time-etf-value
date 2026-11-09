@@ -1,154 +1,153 @@
 ﻿종목코드,종목명,보유ETF수,보유ETF,최대비중
-NVDA,NVIDIA Corp,6,"글로벌AI인공지능,글로벌소비트렌드,글로벌휴머노이드로봇,나스닥100채권혼합50,미국S&P500,미국나스닥100",10.24
-TSLA,Tesla Inc,5,"글로벌AI인공지능,글로벌휴머노이드로봇,나스닥100채권혼합50,미국S&P500,미국나스닥100",10.84
-MSFT,Microsoft Corp,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",7.77
-AMZN,Amazon.com Inc,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",5.53
-META,Meta Platforms Inc,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",4.48
-LLY,Eli Lilly & Co,4,"글로벌바이오,나스닥100채권혼합50,미국S&P500,미국나스닥100",12.31
-AAPL,Apple Inc,4,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",6.59
-GOOGL,Alphabet Inc,4,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",5.35
-AMD,Advanced Micro Devices Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.93
-PLTR,Palantir Technologies Inc,4,"글로벌우주테크&방산,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.85
-BE,Bloom Energy Corp,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.29
-PANW,Palo Alto Networks Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",2.07
-LITE,Lumentum Holdings Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",1.79
-CRWD,Crowdstrike Holdings Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",1.52
-SPCX,Space Exploration Technologies Corp,3,"글로벌우주테크&방산,나스닥100채권혼합50,미국나스닥100",5.7
-WMT,Walmart Inc,3,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500",5.68
-MU,Micron Technology Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.92
-AVGO,Broadcom Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.78
-AMGN,Amgen Inc,3,"글로벌바이오,나스닥100채권혼합50,미국S&P500",2.74
-QCOM,QUALCOMM Inc,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",2.62
-NTRA,Natera Inc,3,"글로벌바이오,나스닥100채권혼합50,미국나스닥100",2.4
-TXN,Texas Instruments Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.34
-INTC,Intel Corp,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",2.28
-SNDK,Sandisk Corp,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",2.22
-GEV,GE Vernova Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",1.89
-OKTA,Okta Inc,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.23
-STX,Seagate Technology Holdings PLC,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.17
-CSCO,Cisco Systems Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",1.03
-NEE,NextEra Energy Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",0.99
-HOOD,Robinhood Markets Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",0.98
-MRVL,Marvell Technology Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",0.64
-RTX,RTX Corp,2,"글로벌우주테크&방산,미국S&P500",10.11
-JNJ,Johnson & Johnson,2,"글로벌바이오,미국S&P500",5.44
-ACN,Accenture PLC,2,"글로벌AI인공지능,미국S&P500",4.82
-ABBV,AbbVie Inc,2,"글로벌바이오,미국S&P500",3.43
-ABT,Abbott Laboratories,2,"글로벌바이오,미국S&P500",3.25
-TMO,Thermo Fisher Scientific Inc,2,"글로벌바이오,미국S&P500",2.84
-MRK,Merck & Co Inc,2,"글로벌바이오,미국S&P500",2.61
-EBAY,eBay Inc,2,"글로벌AI인공지능,글로벌소비트렌드",1.8
+NVDA,NVIDIA Corp,6,"글로벌AI인공지능,글로벌소비트렌드,글로벌휴머노이드로봇,나스닥100채권혼합50,미국S&P500,미국나스닥100",9.56
+TSLA,Tesla Inc,5,"글로벌AI인공지능,글로벌휴머노이드로봇,나스닥100채권혼합50,미국S&P500,미국나스닥100",9.95
+MSFT,Microsoft Corp,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",8.25
+AMZN,Amazon.com Inc,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",6.01
+META,Meta Platforms Inc,5,"글로벌AI인공지능,글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",4.35
+LLY,Eli Lilly & Co,4,"글로벌바이오,나스닥100채권혼합50,미국S&P500,미국나스닥100",12.23
+AAPL,Apple Inc,4,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",7.15
+GOOGL,Alphabet Inc,4,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500,미국나스닥100",5.76
+PLTR,Palantir Technologies Inc,4,"글로벌우주테크&방산,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.64
+AMD,Advanced Micro Devices Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.36
+BE,Bloom Energy Corp,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",3.03
+PANW,Palo Alto Networks Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",2.12
+CRWD,Crowdstrike Holdings Inc,4,"글로벌AI인공지능,나스닥100채권혼합50,미국S&P500,미국나스닥100",1.5
+WMT,Walmart Inc,3,"글로벌소비트렌드,나스닥100채권혼합50,미국S&P500",5.67
+SPCX,Space Exploration Technologies Corp,3,"글로벌우주테크&방산,나스닥100채권혼합50,미국나스닥100",5.45
+AMGN,Amgen Inc,3,"글로벌바이오,나스닥100채권혼합50,미국S&P500",2.72
+MU,Micron Technology Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.65
+AVGO,Broadcom Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.61
+QCOM,QUALCOMM Inc,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",2.55
+TXN,Texas Instruments Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.3
+INTC,Intel Corp,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",2.2
+NEE,NextEra Energy Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",2.09
+GEV,GE Vernova Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",1.93
+SNDK,Sandisk Corp,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.86
+LITE,Lumentum Holdings Inc,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.57
+LIN,Linde PLC,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",1.35
+OKTA,Okta Inc,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.18
+STX,Seagate Technology Holdings PLC,3,"글로벌AI인공지능,나스닥100채권혼합50,미국나스닥100",1.08
+CSCO,Cisco Systems Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",1.05
+HOOD,Robinhood Markets Inc,3,"나스닥100채권혼합50,미국S&P500,미국나스닥100",0.97
+RTX,RTX Corp,2,"글로벌우주테크&방산,미국S&P500",10.27
+JNJ,Johnson & Johnson,2,"글로벌바이오,미국S&P500",5.54
+ACN,Accenture PLC,2,"글로벌AI인공지능,미국S&P500",5.22
+ABBV,AbbVie Inc,2,"글로벌바이오,미국S&P500",3.47
+ABT,Abbott Laboratories,2,"글로벌바이오,미국S&P500",3.3
+TMO,Thermo Fisher Scientific Inc,2,"글로벌바이오,미국S&P500",2.81
+MRK,Merck & Co Inc,2,"글로벌바이오,미국S&P500",2.63
+XEL,Xcel Energy Inc,2,"나스닥100채권혼합50,미국나스닥100",2.09
+EBAY,eBay Inc,2,"글로벌AI인공지능,글로벌소비트렌드",1.92
+COST,Costco Wholesale Corp,2,"나스닥100채권혼합50,미국S&P500",1.51
 MSTR,Strategy Inc,2,"나스닥100채권혼합50,미국나스닥100",1.47
-MELI,MercadoLibre Inc,2,"글로벌AI인공지능,글로벌소비트렌드",1.46
-WDC,Western Digital Corp,2,"글로벌AI인공지능,미국나스닥100",1.34
-COIN,Coinbase Global Inc,2,"나스닥100채권혼합50,미국나스닥100",1.27
-DELL,Dell Technologies Inc,2,"나스닥100채권혼합50,미국나스닥100",1.24
-KLAC,KLA Corp,2,"나스닥100채권혼합50,미국나스닥100",1.02
-XEL,Xcel Energy Inc,2,"나스닥100채권혼합50,미국나스닥100",1.0
-HSAI,Hesai Group,2,"글로벌휴머노이드로봇,차이나AI테크",0.96
-ALAB,Astera Labs Inc,2,"나스닥100채권혼합50,미국나스닥100",0.78
-DDOG,Datadog Inc,2,"나스닥100채권혼합50,미국나스닥100",0.76
-GE,General Electric Co,1,글로벌우주테크&방산,9.82
-LMT,Lockheed Martin Corp,1,글로벌우주테크&방산,6.95
-MRNA,Moderna Inc,1,글로벌바이오,4.87
-TER,Teradyne Inc,1,글로벌휴머노이드로봇,4.71
-GD,General Dynamics Corp,1,글로벌우주테크&방산,4.66
-ULTA,Ulta Beauty Inc,1,글로벌소비트렌드,4.56
-DIS,Walt Disney Co/The,1,글로벌소비트렌드,4.16
-GMAB,Genmab A/S,1,글로벌바이오,4.14
-HWM,Howmet Aerospace Inc,1,글로벌우주테크&방산,3.81
-NOC,Northrop Grumman Corp,1,글로벌우주테크&방산,3.56
-MOG-A,Moog Inc,1,글로벌우주테크&방산,3.44
-HON,Honeywell International Inc,1,글로벌우주테크&방산,3.42
-BRK-B,Berkshire Hathaway Inc,1,미국S&P500,3.38
-TDG,TransDigm Group Inc,1,글로벌우주테크&방산,3.26
-IBM,International Business Machines Corp,1,글로벌AI인공지능,3.23
-ROP,Roper Technologies Inc,1,글로벌AI인공지능,3.23
-RVTY,Revvity Inc,1,글로벌바이오,3.21
-LHX,L3Harris Technologies Inc,1,글로벌우주테크&방산,3.2
-NVS,Novartis AG,1,글로벌바이오,3.18
-REGN,Regeneron Pharmaceuticals Inc,1,글로벌바이오,3.15
-GILD,Gilead Sciences Inc,1,글로벌바이오,3.14
-CVX,Chevron Corp,1,미국S&P500,3.12
-UTHR,United Therapeutics Corp,1,글로벌바이오,3.09
-BIIB,Biogen Inc,1,글로벌바이오,3.07
-TEVA,Teva Pharmaceutical Industries Ltd,1,글로벌바이오,2.95
-ROIV,Roivant Sciences Ltd,1,글로벌바이오,2.94
-VTRS,Viatris Inc,1,글로벌바이오,2.94
-RELX,RELX PLC,1,글로벌바이오,2.92
-GOOG,Alphabet Inc,1,글로벌AI인공지능,2.91
+MELI,MercadoLibre Inc,2,"글로벌AI인공지능,글로벌소비트렌드",1.3
+COIN,Coinbase Global Inc,2,"나스닥100채권혼합50,미국나스닥100",1.26
+WDC,Western Digital Corp,2,"글로벌AI인공지능,미국나스닥100",1.19
+PEP,PepsiCo Inc,2,"나스닥100채권혼합50,미국S&P500",1.08
+SBUX,Starbucks Corp,2,"나스닥100채권혼합50,미국S&P500",1.03
+HSAI,Hesai Group,2,"글로벌휴머노이드로봇,차이나AI테크",0.97
+KLAC,KLA Corp,2,"나스닥100채권혼합50,미국나스닥100",0.97
+DELL,Dell Technologies Inc,2,"나스닥100채권혼합50,미국나스닥100",0.67
+MRVL,Marvell Technology Inc,2,"나스닥100채권혼합50,미국나스닥100",0.59
+GE,General Electric Co,1,글로벌우주테크&방산,10.4
+LMT,Lockheed Martin Corp,1,글로벌우주테크&방산,7.04
+GD,General Dynamics Corp,1,글로벌우주테크&방산,4.77
+MRNA,Moderna Inc,1,글로벌바이오,4.7
+ULTA,Ulta Beauty Inc,1,글로벌소비트렌드,4.54
+DIS,Walt Disney Co/The,1,글로벌소비트렌드,4.14
+TER,Teradyne Inc,1,글로벌휴머노이드로봇,4.11
+GMAB,Genmab A/S,1,글로벌바이오,4.09
+HWM,Howmet Aerospace Inc,1,글로벌우주테크&방산,3.78
+NOC,Northrop Grumman Corp,1,글로벌우주테크&방산,3.73
+TDG,TransDigm Group Inc,1,글로벌우주테크&방산,3.54
+BRK-B,Berkshire Hathaway Inc,1,미국S&P500,3.51
+ROP,Roper Technologies Inc,1,글로벌AI인공지능,3.47
+HON,Honeywell International Inc,1,글로벌우주테크&방산,3.39
+IBM,International Business Machines Corp,1,글로벌AI인공지능,3.38
+LHX,L3Harris Technologies Inc,1,글로벌우주테크&방산,3.33
+NVS,Novartis AG,1,글로벌바이오,3.22
+CVX,Chevron Corp,1,미국S&P500,3.21
+REGN,Regeneron Pharmaceuticals Inc,1,글로벌바이오,3.16
+RVTY,Revvity Inc,1,글로벌바이오,3.13
+GILD,Gilead Sciences Inc,1,글로벌바이오,3.11
+GOOG,Alphabet Inc,1,글로벌AI인공지능,3.08
+BIIB,Biogen Inc,1,글로벌바이오,3.04
+RELX,RELX PLC,1,글로벌바이오,3.04
+TEVA,Teva Pharmaceutical Industries Ltd,1,글로벌바이오,3.04
+VTRS,Viatris Inc,1,글로벌바이오,2.99
+CRM,Salesforce Inc,1,글로벌AI인공지능,2.98
+UTHR,United Therapeutics Corp,1,글로벌바이오,2.97
+MOG-A,Moog Inc,1,글로벌우주테크&방산,2.96
+ROIV,Roivant Sciences Ltd,1,글로벌바이오,2.91
+IQV,IQVIA Holdings Inc,1,글로벌바이오,2.9
 PFE,Pfizer Inc,1,글로벌바이오,2.89
-CRM,Salesforce Inc,1,글로벌AI인공지능,2.82
 SNOW,Snowflake Inc,1,글로벌AI인공지능,2.82
-IQV,IQVIA Holdings Inc,1,글로벌바이오,2.79
-TGT,Target Corp,1,글로벌소비트렌드,2.73
-GSK,GSK PLC,1,글로벌바이오,2.65
-ILMN,Illumina Inc,1,글로벌바이오,2.59
-NOW,ServiceNow Inc,1,글로벌AI인공지능,2.3
-ONON,On Holding AG,1,글로벌소비트렌드,2.2
-TDY,Teledyne Technologies Inc,1,글로벌우주테크&방산,2.19
-TAK,Takeda Pharmaceutical Co Ltd,1,글로벌바이오,1.99
-RKLB,Rocket Lab Corp,1,글로벌우주테크&방산,1.82
+GSK,GSK PLC,1,글로벌바이오,2.7
+TGT,Target Corp,1,글로벌소비트렌드,2.67
+ILMN,Illumina Inc,1,글로벌바이오,2.46
+NOW,ServiceNow Inc,1,글로벌AI인공지능,2.33
+NTRA,Natera Inc,1,글로벌바이오,2.31
+ONON,On Holding AG,1,글로벌소비트렌드,2.16
+TDY,Teledyne Technologies Inc,1,글로벌우주테크&방산,2.15
+TAK,Takeda Pharmaceutical Co Ltd,1,글로벌바이오,2.07
 ALNY,Alnylam Pharmaceuticals Inc,1,글로벌바이오,1.71
-AXON,Axon Enterprise Inc,1,글로벌우주테크&방산,1.67
-BMY,Bristol-Myers Squibb Co,1,글로벌바이오,1.6
-JPM,JPMorgan Chase & Co,1,미국S&P500,1.58
-V,Visa Inc,1,미국S&P500,1.47
+RKLB,Rocket Lab Corp,1,글로벌우주테크&방산,1.68
+BMY,Bristol-Myers Squibb Co,1,글로벌바이오,1.63
+JPM,JPMorgan Chase & Co,1,미국S&P500,1.59
+AXON,Axon Enterprise Inc,1,글로벌우주테크&방산,1.58
+BA,Boeing Co/The,1,글로벌우주테크&방산,1.51
+KO,Coca-Cola Co/The,1,미국S&P500,1.49
+V,Visa Inc,1,미국S&P500,1.49
 ISRG,Intuitive Surgical Inc,1,글로벌휴머노이드로봇,1.44
-KO,Coca-Cola Co/The,1,미국S&P500,1.42
-COST,Costco Wholesale Corp,1,미국S&P500,1.41
-TWLO,Twilio Inc,1,글로벌AI인공지능,1.37
-KR,Kroger Co/The,1,글로벌소비트렌드,1.36
+TWLO,Twilio Inc,1,글로벌AI인공지능,1.39
+KR,Kroger Co/The,1,글로벌소비트렌드,1.38
 LYV,Live Nation Entertainment Inc,1,글로벌소비트렌드,1.34
-CMCSA,Comcast Corp,1,글로벌소비트렌드,1.3
-FWONK,Liberty Media Corp,1,글로벌소비트렌드,1.22
-WDAY,Workday Inc,1,글로벌AI인공지능,1.18
-TTWO,Take-Two Interactive Software Inc,1,글로벌소비트렌드,1.09
-LIN,Linde PLC,1,미국S&P500,1.06
-CRWV,CoreWeave Inc,1,미국나스닥100,1.02
-PEP,PepsiCo Inc,1,미국S&P500,1.02
-HII,Huntington Ingalls Industries Inc,1,글로벌우주테크&방산,1.01
-SBUX,Starbucks Corp,1,미국S&P500,1.01
+FWONK,Liberty Media Corp,1,글로벌소비트렌드,1.33
+CMCSA,Comcast Corp,1,글로벌소비트렌드,1.31
+WDAY,Workday Inc,1,글로벌AI인공지능,1.26
+TTWO,Take-Two Interactive Software Inc,1,글로벌소비트렌드,1.13
+CRWV,CoreWeave Inc,1,미국나스닥100,1.01
 BKR,Baker Hughes Co,1,글로벌AI인공지능,0.99
-NTAP,NetApp Inc,1,글로벌AI인공지능,0.99
-PG,Procter & Gamble Co/The,1,미국S&P500,0.94
+PG,Procter & Gamble Co/The,1,미국S&P500,0.98
+NEM,Newmont Corp,1,미국S&P500,0.96
+NTAP,NetApp Inc,1,글로벌AI인공지능,0.96
+XOM,ExxonMobil Holdings Corp,1,미국S&P500,0.94
 CW,Curtiss-Wright Corp,1,글로벌우주테크&방산,0.93
-TKO,TKO Group Holdings Inc,1,글로벌소비트렌드,0.93
-ETSY,Etsy Inc,1,글로벌소비트렌드,0.91
-MA,Mastercard Inc,1,미국S&P500,0.91
-XOM,ExxonMobil Holdings Corp,1,미국S&P500,0.91
-NEM,Newmont Corp,1,미국S&P500,0.9
-P,Everpure Inc,1,글로벌AI인공지능,0.88
-XYZ,Block Inc,1,글로벌소비트렌드,0.84
-UNH,UnitedHealth Group Inc,1,미국S&P500,0.83
-M,Macys Inc,1,글로벌소비트렌드,0.82
-EXPE,Expedia Group Inc,1,글로벌소비트렌드,0.79
-MS,Morgan Stanley,1,미국S&P500,0.78
-WMG,Warner Music Group Corp,1,글로벌소비트렌드,0.78
-MTCH,Match Group Inc,1,글로벌소비트렌드,0.76
-HEI,HEICO Corp,1,글로벌우주테크&방산,0.75
-SKYD,Skydance Corp,1,글로벌소비트렌드,0.75
-ABNB,Airbnb Inc,1,글로벌소비트렌드,0.74
+MA,Mastercard Inc,1,미국S&P500,0.93
+TKO,TKO Group Holdings Inc,1,글로벌소비트렌드,0.92
+ETSY,Etsy Inc,1,글로벌소비트렌드,0.87
+UNH,UnitedHealth Group Inc,1,미국S&P500,0.84
+XYZ,Block Inc,1,글로벌소비트렌드,0.82
+P,Everpure Inc,1,글로벌AI인공지능,0.79
+M,Macys Inc,1,글로벌소비트렌드,0.78
+DDOG,Datadog Inc,1,미국나스닥100,0.77
+MS,Morgan Stanley,1,미국S&P500,0.77
+WMG,Warner Music Group Corp,1,글로벌소비트렌드,0.77
+HEI,HEICO Corp,1,글로벌우주테크&방산,0.76
+MTCH,Match Group Inc,1,글로벌소비트렌드,0.75
+SKYD,Skydance Corp,1,글로벌소비트렌드,0.74
 JOYY,JOYY Inc,1,글로벌소비트렌드,0.73
-SNAP,Snap Inc,1,글로벌소비트렌드,0.73
-VZ,Verizon Communications Inc,1,미국S&P500,0.64
-DUOL,Duolingo Inc,1,글로벌소비트렌드,0.61
-LULU,Lululemon Athletica Inc,1,글로벌소비트렌드,0.61
-ETN,Eaton Corp PLC,1,미국S&P500,0.56
-ASO,Academy Sports & Outdoors Inc,1,글로벌소비트렌드,0.52
-SPHR,Sphere Entertainment Co,1,글로벌소비트렌드,0.52
-GRND,Grindr Inc,1,글로벌소비트렌드,0.5
-LRN,Stride Inc,1,글로벌소비트렌드,0.5
-MSGE,Madison Square Garden Entertainment Corp,1,글로벌소비트렌드,0.48
-TAL,TAL Education Group,1,글로벌소비트렌드,0.47
-WFC,Wells Fargo & Co,1,미국S&P500,0.47
-CHWY,Chewy Inc,1,글로벌소비트렌드,0.44
-CVNA,Carvana Co,1,글로벌소비트렌드,0.44
-NET,Cloudflare Inc,1,미국S&P500,0.42
-LOPE,Grand Canyon Education Inc,1,글로벌소비트렌드,0.41
-H,Hyatt Hotels Corp,1,미국S&P500,0.38
-RUM,RUM Group Inc,1,글로벌소비트렌드,0.36
+ABNB,Airbnb Inc,1,글로벌소비트렌드,0.72
+ALAB,Astera Labs Inc,1,미국나스닥100,0.69
+EXPE,Expedia Group Inc,1,글로벌소비트렌드,0.69
+VZ,Verizon Communications Inc,1,미국S&P500,0.67
+SNAP,Snap Inc,1,글로벌소비트렌드,0.64
+LULU,Lululemon Athletica Inc,1,글로벌소비트렌드,0.62
+DUOL,Duolingo Inc,1,글로벌소비트렌드,0.6
+SPHR,Sphere Entertainment Co,1,글로벌소비트렌드,0.55
+ETN,Eaton Corp PLC,1,미국S&P500,0.54
+ASO,Academy Sports & Outdoors Inc,1,글로벌소비트렌드,0.53
+GRND,Grindr Inc,1,글로벌소비트렌드,0.49
+TAL,TAL Education Group,1,글로벌소비트렌드,0.49
+LRN,Stride Inc,1,글로벌소비트렌드,0.48
+WFC,Wells Fargo & Co,1,미국S&P500,0.48
+MSGE,Madison Square Garden Entertainment Corp,1,글로벌소비트렌드,0.46
+CHWY,Chewy Inc,1,글로벌소비트렌드,0.43
+CVNA,Carvana Co,1,글로벌소비트렌드,0.41
+H,Hyatt Hotels Corp,1,미국S&P500,0.39
 AAL,American Airlines Group Inc,1,미국S&P500,0.35
-PLTK,Playtika Holding Corp,1,글로벌소비트렌드,0.24
+LOPE,Grand Canyon Education Inc,1,글로벌소비트렌드,0.34
+RUM,RUM Group Inc,1,글로벌소비트렌드,0.33
+PLTK,Playtika Holding Corp,1,글로벌소비트렌드,0.27
 ICLR,ICON PLC,1,글로벌바이오,0.09
 CCL,Carnival Corp Ltd,1,글로벌소비트렌드,0.03
