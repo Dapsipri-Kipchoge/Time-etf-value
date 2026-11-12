@@ -1,278 +1,282 @@
 ﻿ETF,종목코드,종목명,수량,비중,기준일
-글로벌휴머노이드로봇,TSLA,Tesla Inc,60,9.74,2026-11-11
-글로벌휴머노이드로봇,NVDA,NVIDIA Corp,102,7.83,2026-11-11
-글로벌휴머노이드로봇,TER,Teradyne Inc,45,4.76,2026-11-11
-글로벌휴머노이드로봇,HSAI,Hesai Group,383,2.35,2026-11-11
-글로벌휴머노이드로봇,ISRG,Intuitive Surgical Inc,7,1.39,2026-11-11
-글로벌휴머노이드로봇,TSM,Taiwan Semiconductor Manufacturing Co Ltd,6,1.0,2026-11-11
-미국나스닥100,MSFT,Microsoft Corp,80,7.92,2026-11-11
-미국나스닥100,AAPL,Apple Inc,108,6.88,2026-11-11
-미국나스닥100,AMZN,Amazon.com Inc,140,6.78,2026-11-11
-미국나스닥100,NVDA,NVIDIA Corp,207,6.71,2026-11-11
-미국나스닥100,GOOGL,Alphabet Inc,106,5.54,2026-11-11
-미국나스닥100,BE,Bloom Energy Corp,94,3.31,2026-11-11
-미국나스닥100,PLTR,Palantir Technologies Inc,105,3.23,2026-11-11
-미국나스닥100,META,Meta Platforms Inc,27,3.14,2026-11-11
-미국나스닥100,AMD,Advanced Micro Devices Inc,33,3.05,2026-11-11
-미국나스닥100,SPCX,Space Exploration Technologies Corp,111,2.86,2026-11-11
-미국나스닥100,MU,Micron Technology Inc,21,2.8,2026-11-11
-미국나스닥100,TSLA,Tesla Inc,37,2.54,2026-11-11
-미국나스닥100,TXN,Texas Instruments Inc,43,2.31,2026-11-11
-미국나스닥100,AVGO,Broadcom Inc,36,2.09,2026-11-11
-미국나스닥100,QCOM,QUALCOMM Inc,67,2.09,2026-11-11
-미국나스닥100,INTC,Intel Corp,190,2.05,2026-11-11
-미국나스닥100,PANW,Palo Alto Networks Inc,34,2.04,2026-11-11
-미국나스닥100,XEL,Xcel Energy Inc,135,1.97,2026-11-11
-미국나스닥100,GEV,GE Vernova Inc,13,1.96,2026-11-11
-미국나스닥100,NEE,NextEra Energy Inc,123,1.94,2026-11-11
-미국나스닥100,TSM,Taiwan Semiconductor Manufacturing Co Ltd,27,1.91,2026-11-11
-미국나스닥100,SKHY,SK hynix Inc,76,1.85,2026-11-11
-미국나스닥100,LLY,Eli Lilly & Co,7,1.79,2026-11-11
-미국나스닥100,CRWD,Crowdstrike Holdings Inc,36,1.49,2026-11-11
-미국나스닥100,MSTR,Strategy Inc,59,1.35,2026-11-11
-미국나스닥100,COIN,Coinbase Global Inc,48,1.19,2026-11-11
-미국나스닥100,NBIS,Nebius Group NV,43,1.1,2026-11-11
-미국나스닥100,STX,Seagate Technology Holdings PLC,12,1.1,2026-11-11
-미국나스닥100,KLAC,KLA Corp,39,1.07,2026-11-11
-미국나스닥100,CRWV,CoreWeave Inc,120,1.07,2026-11-11
-미국나스닥100,CSCO,Cisco Systems Inc,57,1.02,2026-11-11
-미국나스닥100,HOOD,Robinhood Markets Inc,64,0.97,2026-11-11
-미국나스닥100,WDC,Western Digital Corp,18,0.95,2026-11-11
-미국나스닥100,OKTA,Okta Inc,29,0.94,2026-11-11
-미국나스닥100,LIN,Linde PLC,9,0.85,2026-11-11
-미국나스닥100,SNDK,Sandisk Corp,5,0.81,2026-11-11
-미국나스닥100,ALAB,Astera Labs Inc,20,0.79,2026-11-11
-미국나스닥100,DDOG,Datadog Inc,23,0.75,2026-11-11
-미국나스닥100,DELL,Dell Technologies Inc,11,0.69,2026-11-11
-미국나스닥100,MRVL,Marvell Technology Inc,23,0.65,2026-11-11
-미국나스닥100,LITE,Lumentum Holdings Inc,5,0.54,2026-11-11
-미국S&P500,MSFT,Microsoft Corp,53,6.61,2026-11-11
-미국S&P500,AAPL,Apple Inc,76,6.1,2026-11-11
-미국S&P500,NVDA,NVIDIA Corp,137,5.6,2026-11-11
-미국S&P500,GOOGL,Alphabet Inc,64,4.22,2026-11-11
-미국S&P500,BRK-B,Berkshire Hathaway Inc,26,3.42,2026-11-11
-미국S&P500,AMZN,Amazon.com Inc,54,3.3,2026-11-11
-미국S&P500,CVX,Chevron Corp,64,3.09,2026-11-11
-미국S&P500,AVGO,Broadcom Inc,38,2.78,2026-11-11
-미국S&P500,META,Meta Platforms Inc,17,2.5,2026-11-11
-미국S&P500,LLY,Eli Lilly & Co,7,2.26,2026-11-11
-미국S&P500,AMD,Advanced Micro Devices Inc,19,2.21,2026-11-11
-미국S&P500,TSM,Taiwan Semiconductor Manufacturing Co Ltd,24,2.13,2026-11-11
-미국S&P500,JNJ,Johnson & Johnson,30,1.94,2026-11-11
-미국S&P500,JPM,JPMorgan Chase & Co,20,1.57,2026-11-11
-미국S&P500,TSLA,Tesla Inc,17,1.47,2026-11-11
-미국S&P500,COST,Costco Wholesale Corp,6,1.46,2026-11-11
-미국S&P500,KO,Coca-Cola Co/The,66,1.45,2026-11-11
-미국S&P500,V,Visa Inc,15,1.45,2026-11-11
-미국S&P500,PLTR,Palantir Technologies Inc,35,1.36,2026-11-11
-미국S&P500,WMT,Walmart Inc,47,1.35,2026-11-11
-미국S&P500,LIN,Linde PLC,11,1.31,2026-11-11
-미국S&P500,PEP,PepsiCo Inc,32,1.04,2026-11-11
-미국S&P500,SBUX,Starbucks Corp,41,1.03,2026-11-11
-미국S&P500,NEM,Newmont Corp,34,0.97,2026-11-11
-미국S&P500,PG,Procter & Gamble Co/The,25,0.96,2026-11-11
-미국S&P500,XOM,ExxonMobil Holdings Corp,24,0.91,2026-11-11
-미국S&P500,MA,Mastercard Inc,6,0.9,2026-11-11
-미국S&P500,MRK,Merck & Co Inc,25,0.85,2026-11-11
-미국S&P500,MU,Micron Technology Inc,5,0.84,2026-11-11
-미국S&P500,HOOD,Robinhood Markets Inc,43,0.82,2026-11-11
-미국S&P500,UNH,UnitedHealth Group Inc,9,0.82,2026-11-11
-미국S&P500,MS,Morgan Stanley,18,0.77,2026-11-11
-미국S&P500,BE,Bloom Energy Corp,17,0.75,2026-11-11
-미국S&P500,NEE,NextEra Energy Inc,35,0.7,2026-11-11
-미국S&P500,AAL,American Airlines Group Inc,211,0.68,2026-11-11
-미국S&P500,CRWD,Crowdstrike Holdings Inc,13,0.68,2026-11-11
-미국S&P500,RTX,RTX Corp,15,0.67,2026-11-11
-미국S&P500,ABBV,AbbVie Inc,10,0.67,2026-11-11
-미국S&P500,VZ,Verizon Communications Inc,62,0.65,2026-11-11
-미국S&P500,H,Hyatt Hotels Corp,15,0.64,2026-11-11
-미국S&P500,CSCO,Cisco Systems Inc,27,0.61,2026-11-11
-미국S&P500,TXN,Texas Instruments Inc,9,0.61,2026-11-11
-미국S&P500,ABT,Abbott Laboratories,23,0.58,2026-11-11
-미국S&P500,ETN,Eaton Corp PLC,7,0.58,2026-11-11
-미국S&P500,GEV,GE Vernova Inc,3,0.57,2026-11-11
-미국S&P500,PANW,Palo Alto Networks Inc,7,0.53,2026-11-11
-미국S&P500,TMO,Thermo Fisher Scientific Inc,3,0.5,2026-11-11
-미국S&P500,WFC,Wells Fargo & Co,24,0.47,2026-11-11
-미국S&P500,ACN,Accenture PLC,8,0.47,2026-11-11
-미국S&P500,WTRG,Essential Utilities Inc,37,0.38,2026-11-11
-미국S&P500,HCA,HCA Healthcare Inc,3,0.35,2026-11-11
-미국S&P500,AMAT,Applied Materials Inc,4,0.34,2026-11-11
-미국S&P500,AMGN,Amgen Inc,3,0.32,2026-11-11
-글로벌AI인공지능,AMZN,Amazon.com Inc,146,5.77,2026-11-11
-글로벌AI인공지능,MSFT,Microsoft Corp,68,5.49,2026-11-11
-글로벌AI인공지능,ACN,Accenture PLC,129,4.86,2026-11-11
-글로벌AI인공지능,AMD,Advanced Micro Devices Inc,54,4.07,2026-11-11
-글로벌AI인공지능,SAP,SAP SE,113,3.98,2026-11-11
-글로벌AI인공지능,BABA,Alibaba Group Holding Ltd,243,3.79,2026-11-11
-글로벌AI인공지능,IBM,International Business Machines Corp,89,3.25,2026-11-11
-글로벌AI인공지능,ROP,Roper Technologies Inc,46,3.21,2026-11-11
-글로벌AI인공지능,GOOG,Alphabet Inc,71,3.01,2026-11-11
-글로벌AI인공지능,SNOW,Snowflake Inc,69,2.98,2026-11-11
-글로벌AI인공지능,CRM,Salesforce Inc,88,2.8,2026-11-11
-글로벌AI인공지능,QCOM,QUALCOMM Inc,106,2.69,2026-11-11
-글로벌AI인공지능,TSM,Taiwan Semiconductor Manufacturing Co Ltd,44,2.53,2026-11-11
-글로벌AI인공지능,NVDA,NVIDIA Corp,92,2.44,2026-11-11
-글로벌AI인공지능,INTC,Intel Corp,276,2.43,2026-11-11
-글로벌AI인공지능,NOW,ServiceNow Inc,149,2.27,2026-11-11
-글로벌AI인공지능,META,Meta Platforms Inc,22,2.09,2026-11-11
-글로벌AI인공지능,ASML,ASML Holding NV,9,2.02,2026-11-11
-글로벌AI인공지능,TSLA,Tesla Inc,36,2.02,2026-11-11
-글로벌AI인공지능,SNDK,Sandisk Corp,15,1.97,2026-11-11
-글로벌AI인공지능,BE,Bloom Energy Corp,68,1.95,2026-11-11
-글로벌AI인공지능,EBAY,eBay Inc,102,1.83,2026-11-11
-글로벌AI인공지능,SKHY,SK hynix Inc,90,1.79,2026-11-11
-글로벌AI인공지능,LITE,Lumentum Holdings Inc,20,1.77,2026-11-11
-글로벌AI인공지능,TWLO,Twilio Inc,45,1.38,2026-11-11
-글로벌AI인공지능,CRWD,Crowdstrike Holdings Inc,38,1.29,2026-11-11
-글로벌AI인공지능,WDC,Western Digital Corp,29,1.25,2026-11-11
-글로벌AI인공지능,PANW,Palo Alto Networks Inc,25,1.23,2026-11-11
-글로벌AI인공지능,OKTA,Okta Inc,45,1.18,2026-11-11
-글로벌AI인공지능,WDAY,Workday Inc,41,1.16,2026-11-11
-글로벌AI인공지능,BKR,Baker Hughes Co,140,1.01,2026-11-11
-글로벌AI인공지능,NTAP,NetApp Inc,37,0.97,2026-11-11
-글로벌AI인공지능,MELI,MercadoLibre Inc,4,0.91,2026-11-11
-글로벌AI인공지능,STX,Seagate Technology Holdings PLC,12,0.9,2026-11-11
-글로벌AI인공지능,P,Everpure Inc,55,0.84,2026-11-11
-글로벌바이오,LLY,Eli Lilly & Co,41,12.32,2026-11-11
-글로벌바이오,MRNA,Moderna Inc,118,6.76,2026-11-11
-글로벌바이오,ABBV,AbbVie Inc,83,5.18,2026-11-11
-글로벌바이오,JNJ,Johnson & Johnson,86,5.17,2026-11-11
-글로벌바이오,GMAB,Genmab A/S,361,4.29,2026-11-11
-글로벌바이오,TMO,Thermo Fisher Scientific Inc,24,3.69,2026-11-11
-글로벌바이오,RELX,RELX PLC,422,3.6,2026-11-11
-글로벌바이오,RVTY,Revvity Inc,87,2.98,2026-11-11
-글로벌바이오,AMGN,Amgen Inc,30,2.97,2026-11-11
-글로벌바이오,SNY,Sanofi SA,289,2.96,2026-11-11
-글로벌바이오,REGN,Regeneron Pharmaceuticals Inc,15,2.94,2026-11-11
-글로벌바이오,ROIV,Roivant Sciences Ltd,334,2.89,2026-11-11
-글로벌바이오,VTRS,Viatris Inc,663,2.89,2026-11-11
-글로벌바이오,BIIB,Biogen Inc,53,2.88,2026-11-11
-글로벌바이오,ABT,Abbott Laboratories,122,2.87,2026-11-11
-글로벌바이오,GILD,Gilead Sciences Inc,78,2.81,2026-11-11
-글로벌바이오,TEVA,Teva Pharmaceutical Industries Ltd,306,2.8,2026-11-11
-글로벌바이오,IQV,IQVIA Holdings Inc,46,2.73,2026-11-11
-글로벌바이오,UTHR,United Therapeutics Corp,22,2.73,2026-11-11
-글로벌바이오,GSK,GSK PLC,225,2.47,2026-11-11
-글로벌바이오,MRK,Merck & Co Inc,75,2.38,2026-11-11
-글로벌바이오,ILMN,Illumina Inc,50,2.35,2026-11-11
-글로벌바이오,NVS,Novartis AG,55,1.92,2026-11-11
-글로벌바이오,TAK,Takeda Pharmaceutical Co Ltd,411,1.85,2026-11-11
-글로벌바이오,NTRA,Natera Inc,27,1.84,2026-11-11
-글로벌바이오,ALNY,Alnylam Pharmaceuticals Inc,46,1.53,2026-11-11
-글로벌바이오,BMY,Bristol-Myers Squibb Co,108,1.43,2026-11-11
-글로벌바이오,PFE,Pfizer Inc,166,1.03,2026-11-11
-글로벌바이오,RVMD,Revolution Medicines Inc,24,1.02,2026-11-11
-글로벌바이오,SMMT,Summit Therapeutics Inc,264,1.0,2026-11-11
-글로벌바이오,ICLR,ICON PLC,2,0.09,2026-11-11
-글로벌바이오,NVO,Novo Nordisk A/S,2,0.02,2026-11-11
-글로벌우주테크&방산,GE,General Electric Co,201,10.64,2026-11-11
-글로벌우주테크&방산,RTX,RTX Corp,325,10.06,2026-11-11
-글로벌우주테크&방산,LMT,Lockheed Martin Corp,74,6.86,2026-11-11
-글로벌우주테크&방산,SPCX,Space Exploration Technologies Corp,268,6.01,2026-11-11
-글로벌우주테크&방산,HWM,Howmet Aerospace Inc,138,4.71,2026-11-11
-글로벌우주테크&방산,GD,General Dynamics Corp,81,4.63,2026-11-11
-글로벌우주테크&방산,NOC,Northrop Grumman Corp,46,3.91,2026-11-11
-글로벌우주테크&방산,PLTR,Palantir Technologies Inc,143,3.82,2026-11-11
-글로벌우주테크&방산,HON,Honeywell International Inc,96,3.47,2026-11-11
-글로벌우주테크&방산,TDG,TransDigm Group Inc,18,3.46,2026-11-11
-글로벌우주테크&방산,LHX,L3Harris Technologies Inc,79,3.38,2026-11-11
-글로벌우주테크&방산,MOG-A,Moog Inc,58,3.12,2026-11-11
-글로벌우주테크&방산,TDY,Teledyne Technologies Inc,22,2.23,2026-11-11
-글로벌우주테크&방산,RKLB,Rocket Lab Corp,222,2.06,2026-11-11
-글로벌우주테크&방산,BA,Boeing Co/The,53,1.44,2026-11-11
-글로벌우주테크&방산,AXON,Axon Enterprise Inc,25,1.2,2026-11-11
-글로벌우주테크&방산,CW,Curtiss-Wright Corp,13,0.99,2026-11-11
-글로벌우주테크&방산,HEI,HEICO Corp,14,0.76,2026-11-11
-차이나AI테크,HSAI,Hesai Group,243,0.66,2026-11-11
-나스닥100채권혼합50,MSFT,Microsoft Corp,32,3.88,2026-11-11
-나스닥100채권혼합50,AAPL,Apple Inc,43,3.35,2026-11-11
-나스닥100채권혼합50,AMZN,Amazon.com Inc,54,3.21,2026-11-11
-나스닥100채권혼합50,NVDA,NVIDIA Corp,78,3.1,2026-11-11
-나스닥100채권혼합50,GOOGL,Alphabet Inc,39,2.5,2026-11-11
-나스닥100채권혼합50,AMD,Advanced Micro Devices Inc,21,2.38,2026-11-11
-나스닥100채권혼합50,MU,Micron Technology Inc,11,1.79,2026-11-11
-나스닥100채권혼합50,META,Meta Platforms Inc,12,1.71,2026-11-11
-나스닥100채권혼합50,SPCX,Space Exploration Technologies Corp,46,1.45,2026-11-11
-나스닥100채권혼합50,PLTR,Palantir Technologies Inc,38,1.43,2026-11-11
-나스닥100채권혼합50,BE,Bloom Energy Corp,30,1.29,2026-11-11
-나스닥100채권혼합50,LLY,Eli Lilly & Co,4,1.26,2026-11-11
-나스닥100채권혼합50,TXN,Texas Instruments Inc,17,1.12,2026-11-11
-나스닥100채권혼합50,TSLA,Tesla Inc,13,1.09,2026-11-11
-나스닥100채권혼합50,WMT,Walmart Inc,39,1.09,2026-11-11
-나스닥100채권혼합50,XEL,Xcel Energy Inc,61,1.09,2026-11-11
-나스닥100채권혼합50,AVGO,Broadcom Inc,15,1.07,2026-11-11
-나스닥100채권혼합50,PANW,Palo Alto Networks Inc,14,1.03,2026-11-11
-나스닥100채권혼합50,NEE,NextEra Energy Inc,50,0.97,2026-11-11
-나스닥100채권혼합50,QCOM,QUALCOMM Inc,25,0.95,2026-11-11
-나스닥100채권혼합50,INTC,Intel Corp,71,0.94,2026-11-11
-나스닥100채권혼합50,TSM,Taiwan Semiconductor Manufacturing Co Ltd,10,0.86,2026-11-11
-나스닥100채권혼합50,CRWD,Crowdstrike Holdings Inc,16,0.81,2026-11-11
-나스닥100채권혼합50,SKHY,SK hynix Inc,25,0.75,2026-11-11
-나스닥100채권혼합50,GEV,GE Vernova Inc,4,0.74,2026-11-11
-나스닥100채권혼합50,NBIS,Nebius Group NV,19,0.6,2026-11-11
-나스닥100채권혼합50,COIN,Coinbase Global Inc,19,0.58,2026-11-11
-나스닥100채권혼합50,STX,Seagate Technology Holdings PLC,5,0.56,2026-11-11
-나스닥100채권혼합50,AMGN,Amgen Inc,5,0.52,2026-11-11
-나스닥100채권혼합50,KLAC,KLA Corp,15,0.51,2026-11-11
-나스닥100채권혼합50,IONQ,IonQ Inc,63,0.5,2026-11-11
-나스닥100채권혼합50,CSCO,Cisco Systems Inc,22,0.48,2026-11-11
-나스닥100채권혼합50,COST,Costco Wholesale Corp,2,0.47,2026-11-11
-나스닥100채권혼합50,LIN,Linde PLC,4,0.46,2026-11-11
-나스닥100채권혼합50,PEP,PepsiCo Inc,14,0.44,2026-11-11
-나스닥100채권혼합50,OKTA,Okta Inc,11,0.43,2026-11-11
-나스닥100채권혼합50,HOOD,Robinhood Markets Inc,22,0.41,2026-11-11
-나스닥100채권혼합50,SNDK,Sandisk Corp,2,0.39,2026-11-11
-나스닥100채권혼합50,MRVL,Marvell Technology Inc,10,0.34,2026-11-11
-나스닥100채권혼합50,MSTR,Strategy Inc,12,0.34,2026-11-11
-나스닥100채권혼합50,SBUX,Starbucks Corp,12,0.29,2026-11-11
-나스닥100채권혼합50,LITE,Lumentum Holdings Inc,2,0.27,2026-11-11
-나스닥100채권혼합50,DELL,Dell Technologies Inc,3,0.23,2026-11-11
-글로벌소비트렌드,MSFT,Microsoft Corp,59,6.76,2026-11-11
-글로벌소비트렌드,WMT,Walmart Inc,210,5.54,2026-11-11
-글로벌소비트렌드,AMZN,Amazon.com Inc,88,4.93,2026-11-11
-글로벌소비트렌드,AAPL,Apple Inc,66,4.86,2026-11-11
-글로벌소비트렌드,ULTA,Ulta Beauty Inc,33,4.61,2026-11-11
-글로벌소비트렌드,META,Meta Platforms Inc,34,4.58,2026-11-11
-글로벌소비트렌드,GOOGL,Alphabet Inc,70,4.24,2026-11-11
-글로벌소비트렌드,DIS,Walt Disney Co/The,167,4.18,2026-11-11
-글로벌소비트렌드,NVDA,NVIDIA Corp,108,4.05,2026-11-11
-글로벌소비트렌드,TGT,Target Corp,80,2.79,2026-11-11
-글로벌소비트렌드,XYZ,Block Inc,128,2.38,2026-11-11
-글로벌소비트렌드,APP,AppLovin Corp,26,2.24,2026-11-11
-글로벌소비트렌드,KR,Kroger Co/The,94,1.34,2026-11-11
-글로벌소비트렌드,FWONK,Liberty Media Corp,59,1.34,2026-11-11
-글로벌소비트렌드,EBAY,eBay Inc,52,1.32,2026-11-11
-글로벌소비트렌드,LYV,Live Nation Entertainment Inc,35,1.3,2026-11-11
-글로벌소비트렌드,MELI,MercadoLibre Inc,4,1.29,2026-11-11
-글로벌소비트렌드,CMCSA,Comcast Corp,249,1.28,2026-11-11
-글로벌소비트렌드,SPOT,Spotify Technology SA,10,1.28,2026-11-11
-글로벌소비트렌드,TTWO,Take-Two Interactive Software Inc,25,1.09,2026-11-11
-글로벌소비트렌드,SE,Sea Ltd,61,1.0,2026-11-11
-글로벌소비트렌드,TKO,TKO Group Holdings Inc,23,0.96,2026-11-11
-글로벌소비트렌드,ETSY,Etsy Inc,45,0.84,2026-11-11
-글로벌소비트렌드,M,Macys Inc,153,0.8,2026-11-11
-글로벌소비트렌드,ABNB,Airbnb Inc,20,0.8,2026-11-11
-글로벌소비트렌드,SKYD,Skydance Corp,429,0.78,2026-11-11
-글로벌소비트렌드,WMG,Warner Music Group Corp,114,0.76,2026-11-11
-글로벌소비트렌드,MTCH,Match Group Inc,90,0.74,2026-11-11
-글로벌소비트렌드,JOYY,JOYY Inc,43,0.74,2026-11-11
-글로벌소비트렌드,EXPE,Expedia Group Inc,12,0.65,2026-11-11
-글로벌소비트렌드,SNAP,Snap Inc,590,0.63,2026-11-11
-글로벌소비트렌드,LULU,Lululemon Athletica Inc,26,0.61,2026-11-11
-글로벌소비트렌드,MSGS,MSG Knickerbockers Corp,9,0.6,2026-11-11
-글로벌소비트렌드,SPHR,Sphere Entertainment Co,23,0.59,2026-11-11
-글로벌소비트렌드,DUOL,Duolingo Inc,18,0.58,2026-11-11
-글로벌소비트렌드,ASO,Academy Sports & Outdoors Inc,37,0.55,2026-11-11
-글로벌소비트렌드,MSGE,Madison Square Garden Entertainment Corp,29,0.49,2026-11-11
-글로벌소비트렌드,TAL,TAL Education Group,227,0.49,2026-11-11
-글로벌소비트렌드,GRND,Grindr Inc,171,0.48,2026-11-11
-글로벌소비트렌드,LRN,Stride Inc,30,0.48,2026-11-11
-글로벌소비트렌드,ONON,On Holding AG,55,0.43,2026-11-11
-글로벌소비트렌드,CVNA,Carvana Co,27,0.43,2026-11-11
-글로벌소비트렌드,CHWY,Chewy Inc,89,0.43,2026-11-11
-글로벌소비트렌드,PDD,PDD Holdings Inc,25,0.42,2026-11-11
-글로벌소비트렌드,RUM,RUM Group Inc,335,0.36,2026-11-11
-글로벌소비트렌드,LOPE,Grand Canyon Education Inc,13,0.32,2026-11-11
-글로벌소비트렌드,PLTK,Playtika Holding Corp,549,0.3,2026-11-11
-글로벌소비트렌드,CCL,Carnival Corp Ltd,4,0.03,2026-11-11
+글로벌휴머노이드로봇,TSLA,Tesla Inc,60,9.55,2026-11-12
+글로벌휴머노이드로봇,NVDA,NVIDIA Corp,103,7.29,2026-11-12
+글로벌휴머노이드로봇,TER,Teradyne Inc,45,4.63,2026-11-12
+글로벌휴머노이드로봇,HSAI,Hesai Group,385,2.32,2026-11-12
+글로벌휴머노이드로봇,ISRG,Intuitive Surgical Inc,7,1.32,2026-11-12
+글로벌휴머노이드로봇,TSM,Taiwan Semiconductor Manufacturing Co Ltd,6,1.0,2026-11-12
+미국나스닥100,MSFT,Microsoft Corp,80,7.81,2026-11-12
+미국나스닥100,AMZN,Amazon.com Inc,140,6.95,2026-11-12
+미국나스닥100,AAPL,Apple Inc,108,6.9,2026-11-12
+미국나스닥100,AMD,Advanced Micro Devices Inc,65,6.13,2026-11-12
+미국나스닥100,NVDA,NVIDIA Corp,175,5.41,2026-11-12
+미국나스닥100,GOOGL,Alphabet Inc,96,5.05,2026-11-12
+미국나스닥100,BE,Bloom Energy Corp,94,3.19,2026-11-12
+미국나스닥100,META,Meta Platforms Inc,27,3.17,2026-11-12
+미국나스닥100,SPCX,Space Exploration Technologies Corp,111,2.91,2026-11-12
+미국나스닥100,TSLA,Tesla Inc,37,2.57,2026-11-12
+미국나스닥100,TXN,Texas Instruments Inc,43,2.37,2026-11-12
+미국나스닥100,MU,Micron Technology Inc,17,2.26,2026-11-12
+미국나스닥100,PLTR,Palantir Technologies Inc,73,2.26,2026-11-12
+미국나스닥100,AVGO,Broadcom Inc,36,2.19,2026-11-12
+미국나스닥100,QCOM,QUALCOMM Inc,66,2.1,2026-11-12
+미국나스닥100,PANW,Palo Alto Networks Inc,34,2.03,2026-11-12
+미국나스닥100,INTC,Intel Corp,190,2.02,2026-11-12
+미국나스닥100,XEL,Xcel Energy Inc,135,1.98,2026-11-12
+미국나스닥100,TSM,Taiwan Semiconductor Manufacturing Co Ltd,27,1.96,2026-11-12
+미국나스닥100,NEE,NextEra Energy Inc,123,1.94,2026-11-12
+미국나스닥100,GEV,GE Vernova Inc,13,1.9,2026-11-12
+미국나스닥100,LLY,Eli Lilly & Co,7,1.84,2026-11-12
+미국나스닥100,SKHY,SK hynix Inc,76,1.81,2026-11-12
+미국나스닥100,CRWD,Crowdstrike Holdings Inc,36,1.49,2026-11-12
+미국나스닥100,STX,Seagate Technology Holdings PLC,12,1.1,2026-11-12
+미국나스닥100,KLAC,KLA Corp,39,1.09,2026-11-12
+미국나스닥100,QNT,Quantinuum Inc,137,1.08,2026-11-12
+미국나스닥100,CRWV,CoreWeave Inc,120,1.07,2026-11-12
+미국나스닥100,NBIS,Nebius Group NV,43,1.06,2026-11-12
+미국나스닥100,CSCO,Cisco Systems Inc,57,1.03,2026-11-12
+미국나스닥100,IONQ,IonQ Inc,155,0.99,2026-11-12
+미국나스닥100,WDC,Western Digital Corp,18,0.95,2026-11-12
+미국나스닥100,HOOD,Robinhood Markets Inc,64,0.95,2026-11-12
+미국나스닥100,OKTA,Okta Inc,29,0.95,2026-11-12
+미국나스닥100,LIN,Linde PLC,9,0.86,2026-11-12
+미국나스닥100,MSTR,Strategy Inc,37,0.82,2026-11-12
+미국나스닥100,ALAB,Astera Labs Inc,20,0.79,2026-11-12
+미국나스닥100,SNDK,Sandisk Corp,5,0.79,2026-11-12
+미국나스닥100,COIN,Coinbase Global Inc,28,0.68,2026-11-12
+미국나스닥100,DELL,Dell Technologies Inc,11,0.67,2026-11-12
+미국나스닥100,MRVL,Marvell Technology Inc,23,0.65,2026-11-12
+미국나스닥100,LITE,Lumentum Holdings Inc,5,0.54,2026-11-12
+미국S&P500,MSFT,Microsoft Corp,52,6.36,2026-11-12
+미국S&P500,AAPL,Apple Inc,76,6.08,2026-11-12
+미국S&P500,NVDA,NVIDIA Corp,129,5.0,2026-11-12
+미국S&P500,GOOGL,Alphabet Inc,63,4.16,2026-11-12
+미국S&P500,BRK-B,Berkshire Hathaway Inc,26,3.48,2026-11-12
+미국S&P500,AMZN,Amazon.com Inc,54,3.36,2026-11-12
+미국S&P500,CVX,Chevron Corp,64,3.1,2026-11-12
+미국S&P500,AVGO,Broadcom Inc,37,2.82,2026-11-12
+미국S&P500,META,Meta Platforms Inc,17,2.5,2026-11-12
+미국S&P500,AMD,Advanced Micro Devices Inc,21,2.48,2026-11-12
+미국S&P500,LLY,Eli Lilly & Co,7,2.3,2026-11-12
+미국S&P500,TSM,Taiwan Semiconductor Manufacturing Co Ltd,24,2.18,2026-11-12
+미국S&P500,JNJ,Johnson & Johnson,30,1.93,2026-11-12
+미국S&P500,JPM,JPMorgan Chase & Co,20,1.57,2026-11-12
+미국S&P500,TSLA,Tesla Inc,17,1.48,2026-11-12
+미국S&P500,KO,Coca-Cola Co/The,66,1.47,2026-11-12
+미국S&P500,COST,Costco Wholesale Corp,6,1.47,2026-11-12
+미국S&P500,V,Visa Inc,15,1.46,2026-11-12
+미국S&P500,PLTR,Palantir Technologies Inc,35,1.36,2026-11-12
+미국S&P500,WMT,Walmart Inc,47,1.35,2026-11-12
+미국S&P500,LIN,Linde PLC,11,1.32,2026-11-12
+미국S&P500,PEP,PepsiCo Inc,32,1.06,2026-11-12
+미국S&P500,SBUX,Starbucks Corp,41,1.04,2026-11-12
+미국S&P500,PG,Procter & Gamble Co/The,25,0.97,2026-11-12
+미국S&P500,MA,Mastercard Inc,6,0.91,2026-11-12
+미국S&P500,XOM,ExxonMobil Holdings Corp,24,0.91,2026-11-12
+미국S&P500,TXN,Texas Instruments Inc,13,0.9,2026-11-12
+미국S&P500,MRK,Merck & Co Inc,25,0.85,2026-11-12
+미국S&P500,UNH,UnitedHealth Group Inc,9,0.84,2026-11-12
+미국S&P500,MU,Micron Technology Inc,5,0.83,2026-11-12
+미국S&P500,HOOD,Robinhood Markets Inc,43,0.8,2026-11-12
+미국S&P500,MS,Morgan Stanley,18,0.78,2026-11-12
+미국S&P500,BE,Bloom Energy Corp,17,0.72,2026-11-12
+미국S&P500,NEE,NextEra Energy Inc,35,0.69,2026-11-12
+미국S&P500,RTX,RTX Corp,15,0.69,2026-11-12
+미국S&P500,AAL,American Airlines Group Inc,211,0.68,2026-11-12
+미국S&P500,ABBV,AbbVie Inc,10,0.67,2026-11-12
+미국S&P500,H,Hyatt Hotels Corp,15,0.66,2026-11-12
+미국S&P500,VZ,Verizon Communications Inc,61,0.65,2026-11-12
+미국S&P500,CRWD,Crowdstrike Holdings Inc,12,0.62,2026-11-12
+미국S&P500,CSCO,Cisco Systems Inc,27,0.61,2026-11-12
+미국S&P500,ABT,Abbott Laboratories,23,0.58,2026-11-12
+미국S&P500,ETN,Eaton Corp PLC,7,0.57,2026-11-12
+미국S&P500,GEV,GE Vernova Inc,3,0.55,2026-11-12
+미국S&P500,PANW,Palo Alto Networks Inc,7,0.52,2026-11-12
+미국S&P500,NEM,Newmont Corp,19,0.52,2026-11-12
+미국S&P500,TMO,Thermo Fisher Scientific Inc,3,0.49,2026-11-12
+미국S&P500,ACN,Accenture PLC,8,0.48,2026-11-12
+미국S&P500,WFC,Wells Fargo & Co,24,0.47,2026-11-12
+미국S&P500,WTRG,Essential Utilities Inc,37,0.38,2026-11-12
+미국S&P500,HCA,HCA Healthcare Inc,3,0.35,2026-11-12
+미국S&P500,AMAT,Applied Materials Inc,4,0.34,2026-11-12
+미국S&P500,AMGN,Amgen Inc,3,0.32,2026-11-12
+미국S&P500,LMT,Lockheed Martin Corp,2,0.28,2026-11-12
+글로벌AI인공지능,AMD,Advanced Micro Devices Inc,81,6.19,2026-11-12
+글로벌AI인공지능,AMZN,Amazon.com Inc,146,5.86,2026-11-12
+글로벌AI인공지능,MSFT,Microsoft Corp,68,5.38,2026-11-12
+글로벌AI인공지능,ACN,Accenture PLC,116,4.45,2026-11-12
+글로벌AI인공지능,IBM,International Business Machines Corp,117,4.24,2026-11-12
+글로벌AI인공지능,SAP,SAP SE,99,3.43,2026-11-12
+글로벌AI인공지능,BABA,Alibaba Group Holding Ltd,211,3.21,2026-11-12
+글로벌AI인공지능,GOOG,Alphabet Inc,71,3.0,2026-11-12
+글로벌AI인공지능,ROP,Roper Technologies Inc,39,2.74,2026-11-12
+글로벌AI인공지능,QCOM,QUALCOMM Inc,106,2.73,2026-11-12
+글로벌AI인공지능,TSM,Taiwan Semiconductor Manufacturing Co Ltd,45,2.65,2026-11-12
+글로벌AI인공지능,SNOW,Snowflake Inc,57,2.5,2026-11-12
+글로벌AI인공지능,INTC,Intel Corp,276,2.38,2026-11-12
+글로벌AI인공지능,CRM,Salesforce Inc,72,2.28,2026-11-12
+글로벌AI인공지능,NOW,ServiceNow Inc,149,2.2,2026-11-12
+글로벌AI인공지능,META,Meta Platforms Inc,22,2.09,2026-11-12
+글로벌AI인공지능,TSLA,Tesla Inc,37,2.08,2026-11-12
+글로벌AI인공지능,SNDK,Sandisk Corp,15,1.91,2026-11-12
+글로벌AI인공지능,BE,Bloom Energy Corp,68,1.87,2026-11-12
+글로벌AI인공지능,LITE,Lumentum Holdings Inc,20,1.74,2026-11-12
+글로벌AI인공지능,SKHY,SK hynix Inc,90,1.73,2026-11-12
+글로벌AI인공지능,ASML,ASML Holding NV,7,1.57,2026-11-12
+글로벌AI인공지능,EBAY,eBay Inc,74,1.36,2026-11-12
+글로벌AI인공지능,NVDA,NVIDIA Corp,54,1.35,2026-11-12
+글로벌AI인공지능,QNT,Quantinuum Inc,203,1.29,2026-11-12
+글로벌AI인공지능,CRWD,Crowdstrike Holdings Inc,38,1.27,2026-11-12
+글로벌AI인공지능,WDC,Western Digital Corp,29,1.24,2026-11-12
+글로벌AI인공지능,PANW,Palo Alto Networks Inc,25,1.21,2026-11-12
+글로벌AI인공지능,IONQ,IonQ Inc,230,1.19,2026-11-12
+글로벌AI인공지능,OKTA,Okta Inc,45,1.19,2026-11-12
+글로벌AI인공지능,BKR,Baker Hughes Co,140,0.99,2026-11-12
+글로벌AI인공지능,NTAP,NetApp Inc,37,0.97,2026-11-12
+글로벌AI인공지능,TWLO,Twilio Inc,29,0.92,2026-11-12
+글로벌AI인공지능,STX,Seagate Technology Holdings PLC,12,0.89,2026-11-12
+글로벌AI인공지능,MELI,MercadoLibre Inc,4,0.88,2026-11-12
+글로벌AI인공지능,P,Everpure Inc,55,0.83,2026-11-12
+글로벌AI인공지능,WDAY,Workday Inc,24,0.67,2026-11-12
+글로벌바이오,LLY,Eli Lilly & Co,41,12.59,2026-11-12
+글로벌바이오,MRNA,Moderna Inc,118,6.34,2026-11-12
+글로벌바이오,ABBV,AbbVie Inc,83,5.23,2026-11-12
+글로벌바이오,JNJ,Johnson & Johnson,86,5.18,2026-11-12
+글로벌바이오,GMAB,Genmab A/S,361,4.18,2026-11-12
+글로벌바이오,TMO,Thermo Fisher Scientific Inc,24,3.69,2026-11-12
+글로벌바이오,RELX,RELX PLC,422,3.61,2026-11-12
+글로벌바이오,AMGN,Amgen Inc,30,2.99,2026-11-12
+글로벌바이오,SNY,Sanofi SA,289,2.99,2026-11-12
+글로벌바이오,RVTY,Revvity Inc,87,2.97,2026-11-12
+글로벌바이오,VTRS,Viatris Inc,663,2.96,2026-11-12
+글로벌바이오,ROIV,Roivant Sciences Ltd,334,2.95,2026-11-12
+글로벌바이오,REGN,Regeneron Pharmaceuticals Inc,15,2.95,2026-11-12
+글로벌바이오,ABT,Abbott Laboratories,122,2.89,2026-11-12
+글로벌바이오,BIIB,Biogen Inc,53,2.88,2026-11-12
+글로벌바이오,GILD,Gilead Sciences Inc,78,2.86,2026-11-12
+글로벌바이오,TEVA,Teva Pharmaceutical Industries Ltd,306,2.78,2026-11-12
+글로벌바이오,UTHR,United Therapeutics Corp,22,2.78,2026-11-12
+글로벌바이오,IQV,IQVIA Holdings Inc,46,2.71,2026-11-12
+글로벌바이오,GSK,GSK PLC,225,2.47,2026-11-12
+글로벌바이오,MRK,Merck & Co Inc,75,2.38,2026-11-12
+글로벌바이오,ILMN,Illumina Inc,50,2.3,2026-11-12
+글로벌바이오,NVS,Novartis AG,55,1.92,2026-11-12
+글로벌바이오,TAK,Takeda Pharmaceutical Co Ltd,411,1.84,2026-11-12
+글로벌바이오,NTRA,Natera Inc,27,1.81,2026-11-12
+글로벌바이오,ALNY,Alnylam Pharmaceuticals Inc,46,1.5,2026-11-12
+글로벌바이오,BMY,Bristol-Myers Squibb Co,108,1.45,2026-11-12
+글로벌바이오,PFE,Pfizer Inc,166,1.05,2026-11-12
+글로벌바이오,SMMT,Summit Therapeutics Inc,264,1.01,2026-11-12
+글로벌바이오,RVMD,Revolution Medicines Inc,24,0.99,2026-11-12
+글로벌바이오,ICLR,ICON PLC,2,0.09,2026-11-12
+글로벌바이오,NVO,Novo Nordisk A/S,2,0.02,2026-11-12
+글로벌우주테크&방산,GE,General Electric Co,201,10.6,2026-11-12
+글로벌우주테크&방산,RTX,RTX Corp,325,10.16,2026-11-12
+글로벌우주테크&방산,LMT,Lockheed Martin Corp,74,6.97,2026-11-12
+글로벌우주테크&방산,SPCX,Space Exploration Technologies Corp,290,6.48,2026-11-12
+글로벌우주테크&방산,HWM,Howmet Aerospace Inc,138,4.72,2026-11-12
+글로벌우주테크&방산,GD,General Dynamics Corp,81,4.65,2026-11-12
+글로벌우주테크&방산,NOC,Northrop Grumman Corp,46,3.94,2026-11-12
+글로벌우주테크&방산,TDG,TransDigm Group Inc,18,3.44,2026-11-12
+글로벌우주테크&방산,HON,Honeywell International Inc,96,3.42,2026-11-12
+글로벌우주테크&방산,LHX,L3Harris Technologies Inc,79,3.4,2026-11-12
+글로벌우주테크&방산,MOG-A,Moog Inc,58,3.1,2026-11-12
+글로벌우주테크&방산,PLTR,Palantir Technologies Inc,105,2.77,2026-11-12
+글로벌우주테크&방산,TDY,Teledyne Technologies Inc,22,2.22,2026-11-12
+글로벌우주테크&방산,RKLB,Rocket Lab Corp,222,2.17,2026-11-12
+글로벌우주테크&방산,BA,Boeing Co/The,53,1.43,2026-11-12
+글로벌우주테크&방산,AXON,Axon Enterprise Inc,25,1.18,2026-11-12
+글로벌우주테크&방산,CW,Curtiss-Wright Corp,13,0.97,2026-11-12
+글로벌우주테크&방산,HEI,HEICO Corp,14,0.75,2026-11-12
+차이나AI테크,HSAI,Hesai Group,243,0.64,2026-11-12
+나스닥100채권혼합50,MSFT,Microsoft Corp,32,3.8,2026-11-12
+나스닥100채권혼합50,AAPL,Apple Inc,43,3.34,2026-11-12
+나스닥100채권혼합50,AMZN,Amazon.com Inc,54,3.26,2026-11-12
+나스닥100채권혼합50,AMD,Advanced Micro Devices Inc,26,2.99,2026-11-12
+나스닥100채권혼합50,NVDA,NVIDIA Corp,72,2.71,2026-11-12
+나스닥100채권혼합50,GOOGL,Alphabet Inc,39,2.5,2026-11-12
+나스닥100채권혼합50,META,Meta Platforms Inc,12,1.72,2026-11-12
+나스닥100채권혼합50,SPCX,Space Exploration Technologies Corp,46,1.47,2026-11-12
+나스닥100채권혼합50,MU,Micron Technology Inc,9,1.46,2026-11-12
+나스닥100채권혼합50,LLY,Eli Lilly & Co,4,1.28,2026-11-12
+나스닥100채권혼합50,BE,Bloom Energy Corp,30,1.24,2026-11-12
+나스닥100채권혼합50,TXN,Texas Instruments Inc,17,1.14,2026-11-12
+나스닥100채권혼합50,AVGO,Broadcom Inc,15,1.11,2026-11-12
+나스닥100채권혼합50,TSLA,Tesla Inc,13,1.1,2026-11-12
+나스닥100채권혼합50,WMT,Walmart Inc,39,1.09,2026-11-12
+나스닥100채권혼합50,PLTR,Palantir Technologies Inc,29,1.09,2026-11-12
+나스닥100채권혼합50,XEL,Xcel Energy Inc,61,1.09,2026-11-12
+나스닥100채권혼합50,PANW,Palo Alto Networks Inc,14,1.02,2026-11-12
+나스닥100채권혼합50,QCOM,QUALCOMM Inc,25,0.97,2026-11-12
+나스닥100채권혼합50,NEE,NextEra Energy Inc,50,0.96,2026-11-12
+나스닥100채권혼합50,INTC,Intel Corp,71,0.92,2026-11-12
+나스닥100채권혼합50,TSM,Taiwan Semiconductor Manufacturing Co Ltd,10,0.88,2026-11-12
+나스닥100채권혼합50,CRWD,Crowdstrike Holdings Inc,16,0.81,2026-11-12
+나스닥100채권혼합50,SKHY,SK hynix Inc,25,0.72,2026-11-12
+나스닥100채권혼합50,GEV,GE Vernova Inc,4,0.71,2026-11-12
+나스닥100채권혼합50,NBIS,Nebius Group NV,19,0.57,2026-11-12
+나스닥100채권혼합50,COIN,Coinbase Global Inc,19,0.56,2026-11-12
+나스닥100채권혼합50,STX,Seagate Technology Holdings PLC,5,0.56,2026-11-12
+나스닥100채권혼합50,AMGN,Amgen Inc,5,0.52,2026-11-12
+나스닥100채권혼합50,KLAC,KLA Corp,15,0.51,2026-11-12
+나스닥100채권혼합50,IONQ,IonQ Inc,63,0.49,2026-11-12
+나스닥100채권혼합50,CSCO,Cisco Systems Inc,22,0.48,2026-11-12
+나스닥100채권혼합50,COST,Costco Wholesale Corp,2,0.48,2026-11-12
+나스닥100채권혼합50,LIN,Linde PLC,4,0.47,2026-11-12
+나스닥100채권혼합50,PEP,PepsiCo Inc,14,0.45,2026-11-12
+나스닥100채권혼합50,OKTA,Okta Inc,11,0.44,2026-11-12
+나스닥100채권혼합50,HOOD,Robinhood Markets Inc,22,0.4,2026-11-12
+나스닥100채권혼합50,SNDK,Sandisk Corp,2,0.38,2026-11-12
+나스닥100채권혼합50,MRVL,Marvell Technology Inc,10,0.34,2026-11-12
+나스닥100채권혼합50,MSTR,Strategy Inc,12,0.32,2026-11-12
+나스닥100채권혼합50,SBUX,Starbucks Corp,12,0.29,2026-11-12
+나스닥100채권혼합50,LITE,Lumentum Holdings Inc,2,0.26,2026-11-12
+나스닥100채권혼합50,DELL,Dell Technologies Inc,3,0.22,2026-11-12
+글로벌소비트렌드,MSFT,Microsoft Corp,59,6.67,2026-11-12
+글로벌소비트렌드,WMT,Walmart Inc,210,5.59,2026-11-12
+글로벌소비트렌드,AMZN,Amazon.com Inc,88,5.05,2026-11-12
+글로벌소비트렌드,AAPL,Apple Inc,66,4.88,2026-11-12
+글로벌소비트렌드,ULTA,Ulta Beauty Inc,33,4.65,2026-11-12
+글로벌소비트렌드,META,Meta Platforms Inc,34,4.62,2026-11-12
+글로벌소비트렌드,GOOGL,Alphabet Inc,70,4.27,2026-11-12
+글로벌소비트렌드,DIS,Walt Disney Co/The,167,4.22,2026-11-12
+글로벌소비트렌드,NVDA,NVIDIA Corp,108,3.87,2026-11-12
+글로벌소비트렌드,TGT,Target Corp,80,2.74,2026-11-12
+글로벌소비트렌드,XYZ,Block Inc,128,2.32,2026-11-12
+글로벌소비트렌드,APP,AppLovin Corp,26,2.18,2026-11-12
+글로벌소비트렌드,KR,Kroger Co/The,94,1.37,2026-11-12
+글로벌소비트렌드,FWONK,Liberty Media Corp,59,1.36,2026-11-12
+글로벌소비트렌드,EBAY,eBay Inc,52,1.36,2026-11-12
+글로벌소비트렌드,LYV,Live Nation Entertainment Inc,35,1.32,2026-11-12
+글로벌소비트렌드,CMCSA,Comcast Corp,249,1.31,2026-11-12
+글로벌소비트렌드,SPOT,Spotify Technology SA,10,1.29,2026-11-12
+글로벌소비트렌드,MELI,MercadoLibre Inc,4,1.26,2026-11-12
+글로벌소비트렌드,TTWO,Take-Two Interactive Software Inc,25,1.19,2026-11-12
+글로벌소비트렌드,SE,Sea Ltd,61,0.99,2026-11-12
+글로벌소비트렌드,TKO,TKO Group Holdings Inc,23,0.97,2026-11-12
+글로벌소비트렌드,ETSY,Etsy Inc,45,0.83,2026-11-12
+글로벌소비트렌드,M,Macys Inc,153,0.81,2026-11-12
+글로벌소비트렌드,ABNB,Airbnb Inc,20,0.79,2026-11-12
+글로벌소비트렌드,WMG,Warner Music Group Corp,114,0.77,2026-11-12
+글로벌소비트렌드,MTCH,Match Group Inc,90,0.76,2026-11-12
+글로벌소비트렌드,JOYY,JOYY Inc,43,0.74,2026-11-12
+글로벌소비트렌드,SKYD,Skydance Corp,429,0.73,2026-11-12
+글로벌소비트렌드,EXPE,Expedia Group Inc,12,0.65,2026-11-12
+글로벌소비트렌드,SNAP,Snap Inc,590,0.63,2026-11-12
+글로벌소비트렌드,LULU,Lululemon Athletica Inc,26,0.61,2026-11-12
+글로벌소비트렌드,MSGS,MSG Knickerbockers Corp,9,0.6,2026-11-12
+글로벌소비트렌드,DUOL,Duolingo Inc,18,0.6,2026-11-12
+글로벌소비트렌드,SPHR,Sphere Entertainment Co,23,0.6,2026-11-12
+글로벌소비트렌드,ASO,Academy Sports & Outdoors Inc,37,0.55,2026-11-12
+글로벌소비트렌드,LRN,Stride Inc,30,0.49,2026-11-12
+글로벌소비트렌드,GRND,Grindr Inc,171,0.49,2026-11-12
+글로벌소비트렌드,MSGE,Madison Square Garden Entertainment Corp,29,0.49,2026-11-12
+글로벌소비트렌드,TAL,TAL Education Group,227,0.49,2026-11-12
+글로벌소비트렌드,CHWY,Chewy Inc,89,0.43,2026-11-12
+글로벌소비트렌드,PDD,PDD Holdings Inc,25,0.42,2026-11-12
+글로벌소비트렌드,CVNA,Carvana Co,27,0.42,2026-11-12
+글로벌소비트렌드,ONON,On Holding AG,55,0.41,2026-11-12
+글로벌소비트렌드,RUM,RUM Group Inc,335,0.36,2026-11-12
+글로벌소비트렌드,LOPE,Grand Canyon Education Inc,13,0.32,2026-11-12
+글로벌소비트렌드,PLTK,Playtika Holding Corp,549,0.32,2026-11-12
+글로벌소비트렌드,CCL,Carnival Corp Ltd,4,0.03,2026-11-12
